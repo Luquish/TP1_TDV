@@ -83,12 +83,22 @@ void batch_check(int n = 10) {
             TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
 
             // Using a TaxiAssignmentChecker to check the solution
+            // Feasibility Check and Cost Check
 
+            std::cout << "Greedy Solution Feasible: " << checker.checkFeasibility(instance, greedy_solution) << std::endl;
             double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
+            std::cout << "Greedy Objective Value: " << solver.getObjectiveValue() << std::endl;
             std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
+            
+            std::cout << std::endl;
 
+            std::cout << "Min Cost Flow Solution Feasible: " << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
             double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
+            std::cout << "Min Cost Flow Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
             std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
+
+            std::cout << std::endl;
+
         }
     }
 }
@@ -97,32 +107,57 @@ void batch_check(int n = 10) {
 int main(int argc, char** argv) {
     //check_small1();
 
-    //batch_check(1);
+    batch_check();
 
-    std::string filename = "input/medium_0.csv";
+    // std::string filename = "input/medium_0.csv";
 
-    TaxiAssignmentInstance instance(filename);
-    std::cout << filename << std::endl;
+    // TaxiAssignmentInstance instance(filename);
+    // std::cout << filename << std::endl;
 
-    MinCostFlowSolver min_cost_flow_solver(instance);
+    // std::cout << "Number of Taxis: " << instance.n << std::endl;
 
-    min_cost_flow_solver.solve();
+    // // Greedy Solver
 
-    TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
+    // GreedySolver solver(instance);
 
-    std::cout << "Min Cost Flow Solution: " << std::endl;
-    std::cout << min_cost_flow_solution << std::endl;
+    // solver.solve();
 
-    //std::cout << "Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-    //std::cout << "Solution Time: " << min_cost_flow_solver.getSolutionTime() << std::endl;
+    // TaxiAssignmentSolution greedy_solution = solver.getSolution();
 
-    TaxiAssignmentChecker checker = TaxiAssignmentChecker();
+    // std::cout << "Greedy Solution: " << std::endl;
+    // std::cout << greedy_solution << std::endl;
 
-    std::cout << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
+    // std::cout << "Objective Value: " << solver.getObjectiveValue() << std::endl;
+    // std::cout << "Solution Time: " << solver.getSolutionTime() << std::endl;
 
-    double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
+    // TaxiAssignmentChecker greedy_checker = TaxiAssignmentChecker();
 
-    std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
+    // std::cout << greedy_checker.checkFeasibility(instance, greedy_solution) << std::endl;
+
+    //double greedy_cost = greedy_checker.getSolutionCost(instance, greedy_solution);
+
+    //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
+
+
+    // MinCostFlowSolver min_cost_flow_solver(instance);
+
+    // min_cost_flow_solver.solve();
+
+    // TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
+
+    // std::cout << "Min Cost Flow Solution: " << std::endl;
+    // std::cout << min_cost_flow_solution << std::endl;
+
+    // std::cout << "Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
+    // std::cout << "Solution Time: " << min_cost_flow_solver.getSolutionTime() << std::endl;
+
+    // TaxiAssignmentChecker checker = TaxiAssignmentChecker();
+
+    // std::cout << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
+
+    // double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
+
+    // std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
 
     return 0;
 }

@@ -34,23 +34,26 @@ void MinCostFlowSolver::solve() {
         //std::cout << "";
         //std::cout << " Arc   Flow / Capacity  Cost" << std::endl;
         for (std::size_t i = 0; i < this->_min_cost_flow.NumArcs(); ++i) {
-            int64_t flow = this->_min_cost_flow.Flow(i);
-            if (flow == 0) continue;
-            int64_t cost = this->_min_cost_flow.Flow(i) * this->_min_cost_flow.UnitCost(i);
-
-            if (cost == 0) continue;
 
             int p = this->_min_cost_flow.Tail(i);
             int t = this->_min_cost_flow.Head(i) - this->_instance.n;
+
+            int64_t flow = this->_min_cost_flow.Flow(i);
+            int64_t cost = this->_min_cost_flow.Flow(i) * this->_min_cost_flow.UnitCost(i);
+
+            if (flow == 0) continue;
+            //if (cost == 0) continue;
+
+            // std::cout << p << " -> " << t
+            //             << "  " << flow << "  / "
+            //             << this->_min_cost_flow.Capacity(i) << "       " << cost << std::endl; 
+
             this->_solution.assign(t, p);
 
             this->_objective_value += cost / 10;
 
-            /* 
-            std::cout << p << " -> " << t
-                        << "  " << flow << "  / "
-                        << this->_min_cost_flow.Capacity(i) << "       " << cost << std::endl; 
-            */
+            //std::cout << "Objective Value: " << this->_objective_value << std::endl;
+           
         }
     } else {
         std::cout << "Solving the min cost flow problem failed. Solver status: "
@@ -120,6 +123,7 @@ void MinCostFlowSolver::_createMinCostFlowNetwork() {
     // Add each arc.
     for (int i = 0; i < start_nodes.size(); ++i) {
         int arc = this->_min_cost_flow.AddArcWithCapacityAndUnitCost(start_nodes[i], end_nodes[i], capacities[i], unit_costs[i]);
+        
         if (arc != i) LOG(FATAL) << "Internal error";
     }
 
@@ -132,6 +136,7 @@ void MinCostFlowSolver::_createMinCostFlowNetwork() {
         std::cout << unit_costs[i] << " ";
     } */
     std::cout << std::endl;
+
 }
 
 void MinCostFlowSolver::_createSolutionInfo() {

@@ -70,9 +70,9 @@ void GreedySolver::solve() {
         this->_objective_value += this->_instance.dist[min_tax][p];//* fare_per_km;
 
         // Solution Status
-        TaxiAssignmentChecker checker = TaxiAssignmentChecker();
+        //TaxiAssignmentChecker checker = TaxiAssignmentChecker();
         
-        this->_solution_status = checker.checkFeasibility(this->_instance, this->_solution) ? 2 : 3;
+        //this->_solution_status = checker.checkFeasibility(this->_instance, this->_solution) ? 2 : 3;
 
     }
 
