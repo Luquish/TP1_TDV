@@ -1,0 +1,30 @@
+Start testing: May 18 08:06 -03
+----------------------------------------------------------
+1/1 Testing: test_simple_lp_program
+1/1 Test: test_simple_lp_program
+Command: "/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/simple_lp_program/build/bin/simple_lp_program"
+Directory: /Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/simple_lp_program/build
+"test_simple_lp_program" start time: May 18 08:06 -03
+Output:
+----------------------------------------------------------
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1684407960.964308       1 simple_lp_program.cc:36] Number of variables = 2
+I0000 00:00:1684407960.964330       1 simple_lp_program.cc:50] Number of constraints = 2
+I0000 00:00:1684407960.964469       1 simple_lp_program.cc:70] Solution:
+
+I0000 00:00:1684407960.964473       1 simple_lp_program.cc:71] Objective value = 25
+I0000 00:00:1684407960.964477       1 simple_lp_program.cc:72] x = 0
+I0000 00:00:1684407960.964478       1 simple_lp_program.cc:73] y = 2.5
+I0000 00:00:1684407960.964479       1 simple_lp_program.cc:77] 
+Advanced usage:
+I0000 00:00:1684407960.964480       1 simple_lp_program.cc:78] Problem solved in 0 milliseconds
+I0000 00:00:1684407960.964481       1 simple_lp_program.cc:79] Problem solved in 0 iterations
+<end of output>
+Test time =   0.24 sec
+----------------------------------------------------------
+Test Passed.
+"test_simple_lp_program" end time: May 18 08:06 -03
+"test_simple_lp_program" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 18 08:06 -03

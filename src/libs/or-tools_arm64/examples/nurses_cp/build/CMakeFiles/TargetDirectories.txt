@@ -1,0 +1,8 @@
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/nurses_cp.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/test.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/edit_cache.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/rebuild_cache.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/list_install_components.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/install.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/install/local.dir
+/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/nurses_cp/build/CMakeFiles/install/strip.dir

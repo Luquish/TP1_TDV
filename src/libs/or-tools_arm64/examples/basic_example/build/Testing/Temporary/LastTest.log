@@ -1,0 +1,26 @@
+Start testing: May 18 08:05 -03
+----------------------------------------------------------
+1/1 Testing: test_basic_example
+1/1 Test: test_basic_example
+Command: "/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/basic_example/build/bin/basic_example"
+Directory: /Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/basic_example/build
+"test_basic_example" start time: May 18 08:05 -03
+Output:
+----------------------------------------------------------
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1684407949.582608       1 basic_example.cc:32] Number of variables = 2
+I0000 00:00:1684407949.583666       1 basic_example.cc:41] Number of constraints = 1
+I0000 00:00:1684407949.586222       1 basic_example.cc:57] Solution:
+
+I0000 00:00:1684407949.586233       1 basic_example.cc:58] Objective value = 4
+I0000 00:00:1684407949.586240       1 basic_example.cc:59] x = 1
+I0000 00:00:1684407949.586242       1 basic_example.cc:60] y = 1
+<end of output>
+Test time =   1.49 sec
+----------------------------------------------------------
+Test Passed.
+"test_basic_example" end time: May 18 08:05 -03
+"test_basic_example" time elapsed: 00:00:01
+----------------------------------------------------------
+
+End testing: May 18 08:05 -03

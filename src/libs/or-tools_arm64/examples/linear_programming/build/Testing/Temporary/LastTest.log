@@ -1,0 +1,74 @@
+Start testing: May 18 08:05 -03
+----------------------------------------------------------
+1/1 Testing: test_linear_programming
+1/1 Test: test_linear_programming
+Command: "/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/linear_programming/build/bin/linear_programming"
+Directory: /Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/linear_programming/build
+"test_linear_programming" start time: May 18 08:05 -03
+Output:
+----------------------------------------------------------
+I0518 08:05:51.894186       1 linear_programming.cc:31] ---- Linear programming example with GLOP ----
+I0518 08:05:51.894445       1 linear_programming.cc:78] Number of variables = 3
+I0518 08:05:51.894449       1 linear_programming.cc:79] Number of constraints = 3
+I0518 08:05:51.895840       1 linear_programming.cc:88] Problem solved in 1 milliseconds
+I0518 08:05:51.895846       1 linear_programming.cc:91] Optimal objective value = 733.333
+I0518 08:05:51.895849       1 linear_programming.cc:94] x1 = 33.3333
+I0518 08:05:51.895850       1 linear_programming.cc:95] x2 = 66.6667
+I0518 08:05:51.895852       1 linear_programming.cc:96] x3 = 0
+I0518 08:05:51.895853       1 linear_programming.cc:98] Advanced usage:
+I0518 08:05:51.895853       1 linear_programming.cc:99] Problem solved in 2 iterations
+I0518 08:05:51.895855       1 linear_programming.cc:100] x1: reduced cost = 0
+I0518 08:05:51.895856       1 linear_programming.cc:101] x2: reduced cost = 0
+I0518 08:05:51.895857       1 linear_programming.cc:102] x3: reduced cost = -2.66667
+I0518 08:05:51.895859       1 linear_programming.cc:104] c0: dual value = 3.33333 activity = 100
+I0518 08:05:51.895860       1 linear_programming.cc:106] c1: dual value = 0.666667 activity = 600
+I0518 08:05:51.895861       1 linear_programming.cc:108] c2: dual value = -0 activity = 200
+I0518 08:05:51.895878       1 linear_programming.cc:31] ---- Linear programming example with CLP ----
+I0518 08:05:51.898330       1 linear_programming.cc:78] Number of variables = 3
+I0518 08:05:51.898335       1 linear_programming.cc:79] Number of constraints = 3
+I0518 08:05:51.901854       1 linear_programming.cc:88] Problem solved in 5 milliseconds
+I0518 08:05:51.901867       1 linear_programming.cc:91] Optimal objective value = 733.333
+I0518 08:05:51.901870       1 linear_programming.cc:94] x1 = 33.3333
+I0518 08:05:51.901871       1 linear_programming.cc:95] x2 = 66.6667
+I0518 08:05:51.901872       1 linear_programming.cc:96] x3 = 0
+I0518 08:05:51.901873       1 linear_programming.cc:98] Advanced usage:
+I0518 08:05:51.901874       1 linear_programming.cc:99] Problem solved in 2 iterations
+I0518 08:05:51.901875       1 linear_programming.cc:100] x1: reduced cost = -8.88178e-16
+I0518 08:05:51.901876       1 linear_programming.cc:101] x2: reduced cost = 0
+I0518 08:05:51.901877       1 linear_programming.cc:102] x3: reduced cost = -2.66667
+I0518 08:05:51.901879       1 linear_programming.cc:104] c0: dual value = 3.33333 activity = 100
+I0518 08:05:51.901880       1 linear_programming.cc:106] c1: dual value = 0.666667 activity = 600
+I0518 08:05:51.901881       1 linear_programming.cc:108] c2: dual value = -0 activity = 200
+I0518 08:05:51.901921       1 linear_programming.cc:31] ---- Linear programming example with GUROBI_LP ----
+I0518 08:05:51.903215       1 linear_programming.cc:39] Supports for solver GUROBI_LP not linked in.
+I0518 08:05:51.903217       1 linear_programming.cc:31] ---- Linear programming example with CPLEX_LP ----
+I0518 08:05:51.903219       1 linear_programming.cc:39] Supports for solver CPLEX_LP not linked in.
+I0518 08:05:51.903221       1 linear_programming.cc:31] ---- Linear programming example with GLPK_LP ----
+I0518 08:05:51.903222       1 linear_programming.cc:39] Supports for solver GLPK_LP not linked in.
+I0518 08:05:51.903225       1 linear_programming.cc:31] ---- Linear programming example with XPRESS_LP ----
+I0518 08:05:51.903226       1 linear_programming.cc:39] Supports for solver XPRESS_LP not linked in.
+I0518 08:05:51.903227       1 linear_programming.cc:31] ---- Linear programming example with PDLP ----
+I0518 08:05:51.903243       1 linear_programming.cc:78] Number of variables = 3
+I0518 08:05:51.903245       1 linear_programming.cc:79] Number of constraints = 3
+I0518 08:05:51.905253       1 linear_programming.cc:88] Problem solved in 2 milliseconds
+I0518 08:05:51.905258       1 linear_programming.cc:91] Optimal objective value = 733.334
+I0518 08:05:51.905259       1 linear_programming.cc:94] x1 = 33.3324
+I0518 08:05:51.905260       1 linear_programming.cc:95] x2 = 66.6682
+I0518 08:05:51.905261       1 linear_programming.cc:96] x3 = 0
+I0518 08:05:51.905262       1 linear_programming.cc:98] Advanced usage:
+I0518 08:05:51.905263       1 linear_programming.cc:99] Problem solved in 256 iterations
+I0518 08:05:51.905264       1 linear_programming.cc:100] x1: reduced cost = -0
+I0518 08:05:51.905265       1 linear_programming.cc:101] x2: reduced cost = -2.67579e-07
+I0518 08:05:51.905266       1 linear_programming.cc:102] x3: reduced cost = -2.66667
+I0518 08:05:51.905267       1 linear_programming.cc:104] c0: dual value = 3.33333 activity = 100.001
+I0518 08:05:51.905269       1 linear_programming.cc:106] c1: dual value = 0.666667 activity = 599.997
+I0518 08:05:51.905270       1 linear_programming.cc:108] c2: dual value = -0 activity = 200.001
+<end of output>
+Test time =   0.26 sec
+----------------------------------------------------------
+Test Passed.
+"test_linear_programming" end time: May 18 08:05 -03
+"test_linear_programming" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 18 08:05 -03

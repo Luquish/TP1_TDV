@@ -1,0 +1,36 @@
+Start testing: May 18 08:06 -03
+----------------------------------------------------------
+1/1 Testing: test_vrp
+1/1 Test: test_vrp
+Command: "/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/vrp/build/bin/vrp"
+Directory: /Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/vrp/build
+"test_vrp" start time: May 18 08:06 -03
+Output:
+----------------------------------------------------------
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1684407973.327248       1 vrp.cc:78] Objective: 4384
+I0000 00:00:1684407973.327282       1 vrp.cc:82] Route for Vehicle 0:
+I0000 00:00:1684407973.327286       1 vrp.cc:92] 0 -> 0
+I0000 00:00:1684407973.327288       1 vrp.cc:93] Distance of the route: 0m
+I0000 00:00:1684407973.327290       1 vrp.cc:82] Route for Vehicle 1:
+I0000 00:00:1684407973.327291       1 vrp.cc:92] 0 -> 0
+I0000 00:00:1684407973.327293       1 vrp.cc:93] Distance of the route: 0m
+I0000 00:00:1684407973.327295       1 vrp.cc:82] Route for Vehicle 2:
+I0000 00:00:1684407973.327297       1 vrp.cc:92] 0 -> 0
+I0000 00:00:1684407973.327299       1 vrp.cc:93] Distance of the route: 0m
+I0000 00:00:1684407973.327300       1 vrp.cc:82] Route for Vehicle 3:
+I0000 00:00:1684407973.327307       1 vrp.cc:92] 0 -> 9 -> 5 -> 8 -> 6 -> 2 -> 10 -> 16 -> 14 -> 13 -> 12 -> 11 -> 15 -> 3 -> 4 -> 1 -> 7 -> 0
+I0000 00:00:1684407973.327308       1 vrp.cc:93] Distance of the route: 4384m
+I0000 00:00:1684407973.327312       1 vrp.cc:96] Total distance of all routes: 4384m
+I0000 00:00:1684407973.327313       1 vrp.cc:97] 
+I0000 00:00:1684407973.327315       1 vrp.cc:98] Advanced usage:
+I0000 00:00:1684407973.327316       1 vrp.cc:99] Problem solved in 2ms
+<end of output>
+Test time =   0.26 sec
+----------------------------------------------------------
+Test Passed.
+"test_vrp" end time: May 18 08:06 -03
+"test_vrp" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 18 08:06 -03

@@ -1,0 +1,12 @@
+prefix=/Users/corentinl/work/main/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534
+exec_prefix=${prefix}
+libdir=/Users/corentinl/work/main/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/lib
+includedir=/Users/corentinl/work/main/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/include
+
+Name: absl_random_internal_randen_hwaes
+Description: Abseil random_internal_randen_hwaes library
+URL: https://abseil.io/
+Version: 20230125
+Requires: absl_random_internal_platform = 20230125, absl_random_internal_randen_hwaes_impl = 20230125, absl_config = 20230125
+Libs: -L${libdir}   -labsl_random_internal_randen_hwaes
+Cflags: -I${includedir} -Wno-float-conversion -Wno-implicit-float-conversion -Wno-implicit-int-float-conversion -Wno-unknown-warning-option -DNOMINMAX -Xarch_x86_64 -Xarch_x86_64 -Xarch_arm64 -Wno-unused-command-line-argument

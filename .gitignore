@@ -9,5 +9,4 @@ src/taxi_batching
 .vscode/settings.json
 .DS_Store
 *.o
-libs/
 src/.profile

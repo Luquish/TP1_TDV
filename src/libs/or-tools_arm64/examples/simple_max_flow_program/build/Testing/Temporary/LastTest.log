@@ -1,0 +1,20 @@
+Start testing: May 18 08:05 -03
+----------------------------------------------------------
+1/1 Testing: test_simple_max_flow_program
+1/1 Test: test_simple_max_flow_program
+Command: "/Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/simple_max_flow_program/build/bin/simple_max_flow_program"
+Directory: /Users/nacho/Downloads/or-tools_arm64_macOS-13.2.1_cpp_v9.6.2534/examples/simple_max_flow_program/build
+"test_simple_max_flow_program" start time: May 18 08:05 -03
+Output:
+----------------------------------------------------------
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1684407957.614505       1 simple_max_flow_program.cc:62] Solving the max flow problem failed. Solver status: 0
+<end of output>
+Test time =   0.64 sec
+----------------------------------------------------------
+Test Passed.
+"test_simple_max_flow_program" end time: May 18 08:05 -03
+"test_simple_max_flow_program" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 18 08:05 -03
