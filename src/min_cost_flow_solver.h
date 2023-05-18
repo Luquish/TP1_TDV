@@ -23,7 +23,7 @@ class MinCostFlowSolver
         int getSolutionStatus() const;
         double getSolutionTime() const;
         
-        
+        double _cost_value;
 	
 	private:
         // Solver atributes.

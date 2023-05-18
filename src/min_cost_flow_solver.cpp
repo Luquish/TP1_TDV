@@ -6,6 +6,7 @@ MinCostFlowSolver::MinCostFlowSolver() {}
 MinCostFlowSolver::MinCostFlowSolver(TaxiAssignmentInstance &instance) {
     this->_instance = instance;
     this->_objective_value = 0;
+    this->_cost_value = 0;
     this->_solution_status = 0;
     this->_solution_time = 0;
 }
@@ -35,22 +36,37 @@ void MinCostFlowSolver::solve() {
         //std::cout << " Arc   Flow / Capacity  Cost" << std::endl;
         for (std::size_t i = 0; i < this->_min_cost_flow.NumArcs(); ++i) {
 
-            int p = this->_min_cost_flow.Tail(i);
-            int t = this->_min_cost_flow.Head(i) - this->_instance.n;
+            //std::cout << "Arc: " << i << std::endl;
+
 
             int64_t flow = this->_min_cost_flow.Flow(i);
             int64_t cost = flow * this->_min_cost_flow.UnitCost(i);
 
             if (flow == 0) continue;
             //if (cost == 0) continue;
+            
+            int taxi = this->_min_cost_flow.Tail(i);
+            int pax = this->_min_cost_flow.Head(i) - this->_instance.n;
+            
 
             // std::cout << p << " -> " << t
             //             << "  " << flow << "  / "
             //             << this->_min_cost_flow.Capacity(i) << "       " << cost << std::endl; 
 
-            this->_solution.assign(t, p);
+            this->_solution.assign(taxi, pax);
+            
+            //this->_objective_value += this->_instance.dist[t][p];
 
-            this->_objective_value += this->_min_cost_flow.UnitCost(i) / 10;
+            this->_objective_value += this->_min_cost_flow.UnitCost(i) / 10.0;
+            int64_t trunk_cost = this->_instance.dist[taxi][pax] * 10;
+            this->_cost_value += trunk_cost / 10.0;
+
+            //std::cout << p << " -> " << t << std::endl;
+            //std::cout << "Trunk Cost: " << trunk_cost / 10.0 << " - Dist: " << this->_instance.dist[t][p] << std::endl;
+            //std::cout << this->_instance.dist[t][p] << "\t" << this->_min_cost_flow.UnitCost(i) / 10.0 << std::endl;
+            // Compare UnitCost with dist
+            
+            //std::cout << "Unit Cost: " << this->_min_cost_flow.UnitCost(i) << " - Dist: " << this->_instance.dist[p][t] * 10 << std::endl;
 
             //this->_objective_value += cost / 10;
 
