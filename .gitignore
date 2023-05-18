@@ -10,3 +10,4 @@ src/taxi_batching
 .DS_Store
 *.o
 src/.profile
+src/libs/
