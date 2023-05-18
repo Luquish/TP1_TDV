@@ -1,0 +1,9 @@
+src/build/
+src/checker.o
+src/greedy_solver.o
+src/main.o
+src/taxi_assignment_instance.o
+src/taxi_assignment_solution.o
+src/taxi_batching
+.DS_Store
+.vscode/settings.json
