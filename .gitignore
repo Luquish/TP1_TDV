@@ -10,4 +10,4 @@ src/taxi_batching
 .DS_Store
 *.o
 src/.profile
-src/libs/
+src/libs/or-tools_arm64/examples/
