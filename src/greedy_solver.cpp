@@ -58,11 +58,11 @@ void GreedySolver::solve() {
         if (this->_instance.pax_trip_dist[p] == 0){
             continue;
         }
-        
+
         double fare_per_km = this->_instance.pax_tot_fare[p] / this->_instance.pax_trip_dist[p];
         // El valor objetivo tiene en cuenta, el precio que cuesta que el taxi vaya a buscar al pasajero
         // Si no hay que tener esto en cuenta, se puede no multiplicar por el precio por km y solo sumar la distancia
-        this->_objective_value += this->_instance.dist[min_tax][p] * fare_per_km;
+        this->_objective_value += this->_instance.dist[min_tax][p];//* fare_per_km;
 
     }
 
