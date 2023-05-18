@@ -16,5 +16,16 @@ int main(int argc, char** argv) {
 
     solver.solve();
 
+    TaxiAssignmentSolution greedy_solution = solver.getSolution();
+
+    std::cout << "Greedy Solution: " << std::endl;
+
+    for (int i = 0; i < instance.n; i++){
+        std::cout << "Taxi " << i << " assigned to passenger " << greedy_solution.getAssignedPax(i) << std::endl;
+    }
+
+    std::cout << "Objective Value: " << solver.getObjectiveValue() << std::endl;
+    std::cout << "Solution Time: " << solver.getSolutionTime() << std::endl;
+
     return 0;
 }
