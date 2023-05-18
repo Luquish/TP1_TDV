@@ -46,20 +46,20 @@ void GreedySolver::solve() {
             }
         }
 
-        if (min_tax == -1){
-            //std::cout << "No se encontro taxi para el pasajero " << p << std::endl;
-            continue;
-        }
+        // if (min_tax == -1){
+        //     //std::cout << "No se encontro taxi para el pasajero " << p << std::endl;
+        //     continue;
+        // }
         
         this->_solution.assign(min_tax, p);
 
         //std::cout << "Taxi " << min_tax << " asignado al pasajero " << p << " con distancia " << min_di << std::endl;
 
-        if (this->_instance.pax_trip_dist[p] == 0){
-            continue;
-        }
+        // if (this->_instance.pax_trip_dist[p] == 0){
+        //     continue;
+        // }
 
-        double fare_per_km = this->_instance.pax_tot_fare[p] / this->_instance.pax_trip_dist[p];
+        //double fare_per_km = this->_instance.pax_tot_fare[p] / this->_instance.pax_trip_dist[p];
         // El valor objetivo tiene en cuenta, el precio que cuesta que el taxi vaya a buscar al pasajero
         // Si no hay que tener esto en cuenta, se puede no multiplicar por el precio por km y solo sumar la distancia
         this->_objective_value += this->_instance.dist[min_tax][p];//* fare_per_km;
