@@ -5,7 +5,18 @@ GreedySolver::GreedySolver() {}
 GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
     this->_instance = instance;
     this->_objective_value = 0;
+    
+    /* 
+        NOT SOLVED = 0
+        OPTIMAL = 1
+        FEASIBLE = 2
+        INFEASIBLE = 3
+        UNBALANCED = 4
+        BAD_RESULT = 5
+        BAD COST RANGE = 6 
+    */
     this->_solution_status = 0;
+
     this->_solution_time = 0;
 }
 
@@ -20,6 +31,7 @@ void GreedySolver::solve() {
     // Al pasajero 1 le asigno el taxi mas cercano de los restantes
 
     // Time solution
+    //std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     auto start = std::chrono::steady_clock::now();
     
     this->_solution = TaxiAssignmentSolution(this->_instance.n);
@@ -46,27 +58,26 @@ void GreedySolver::solve() {
             }
         }
 
-        // if (min_tax == -1){
-        //     //std::cout << "No se encontro taxi para el pasajero " << p << std::endl;
-        //     continue;
-        // }
-        
+        if (min_tax == -1){
+            this->_solution_status = 4;
+            continue;
+        }
+
         this->_solution.assign(min_tax, p);
 
-        //std::cout << "Taxi " << min_tax << " asignado al pasajero " << p << " con distancia " << min_di << std::endl;
-
-        // if (this->_instance.pax_trip_dist[p] == 0){
-        //     continue;
-        // }
-
-        //double fare_per_km = this->_instance.pax_tot_fare[p] / this->_instance.pax_trip_dist[p];
-        // El valor objetivo tiene en cuenta, el precio que cuesta que el taxi vaya a buscar al pasajero
-        // Si no hay que tener esto en cuenta, se puede no multiplicar por el precio por km y solo sumar la distancia
+        // El valor objetivo tiene en cuenta la distancia recorrida por el taxi para ir a buscar al pasajero
+        // Esta operación se podría hacer despues de asignar todos los pasajeros, y luego de timear el algoritmo
         this->_objective_value += this->_instance.dist[min_tax][p];//* fare_per_km;
+
+        // Solution Status
+        TaxiAssignmentChecker checker = TaxiAssignmentChecker();
+        
+        this->_solution_status = checker.checkFeasibility(this->_instance, this->_solution) ? 2 : 3;
 
     }
 
     // Time solution
+    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     auto end = std::chrono::steady_clock::now();
     this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
 }
@@ -80,6 +91,15 @@ TaxiAssignmentSolution GreedySolver::getSolution() const {
 }
 
 int GreedySolver::getSolutionStatus() const {
+    /*
+        NOT SOLVED = 0
+        OPTIMAL = 1
+        FEASIBLE = 2
+        INFEASIBLE = 3
+        UNBALANCED = 4
+        BAD_RESULT = 5
+        BAD COST RANGE = 6
+    */
     return this->_solution_status;
 }
 

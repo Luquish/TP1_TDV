@@ -6,7 +6,7 @@
 #include <iostream>
 #include "taxi_assignment_instance.h"
 #include "taxi_assignment_solution.h"
-
+#include "checker.h"
 
 class GreedySolver
 {
@@ -29,6 +29,7 @@ class GreedySolver
         TaxiAssignmentInstance _instance;
         TaxiAssignmentSolution _solution;
         double _objective_value;
+        // http://google.github.io/or-tools/python/ortools/graph/pywrapgraph.html#MinCostFlowBase
         int _solution_status;
         double _solution_time;
 

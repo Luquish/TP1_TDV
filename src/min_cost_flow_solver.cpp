@@ -16,6 +16,12 @@ void MinCostFlowSolver::setInstance(TaxiAssignmentInstance &instance) {
 
 void MinCostFlowSolver::solve() {
 
+    // Time solution
+    auto start = std::chrono::steady_clock::now();
+
+    // Record the solution.
+    this->_solution = TaxiAssignmentSolution(this->_instance.n);
+
     // Create the min cost network flow instance.
     this->_createMinCostFlowNetwork();
 
@@ -24,21 +30,39 @@ void MinCostFlowSolver::solve() {
 
     // Obtain the solution, construct the corresponding object and record de desired parameters.
     if (status == operations_research::MinCostFlow::OPTIMAL) {
-        std::cout << "Minimum cost flow: " << this->_min_cost_flow.OptimalCost() << std::endl;
-        std::cout << "";
-        std::cout << " Arc   Flow / Capacity  Cost" << std::endl;
+        //std::cout << "Minimum cost flow: " << this->_min_cost_flow.OptimalCost() << std::endl;
+        //std::cout << "";
+        //std::cout << " Arc   Flow / Capacity  Cost" << std::endl;
         for (std::size_t i = 0; i < this->_min_cost_flow.NumArcs(); ++i) {
             int64_t flow = this->_min_cost_flow.Flow(i);
             if (flow == 0) continue;
             int64_t cost = this->_min_cost_flow.Flow(i) * this->_min_cost_flow.UnitCost(i);
-            std::cout << this->_min_cost_flow.Tail(i) << " -> " << this->_min_cost_flow.Head(i)
-                        << "  " << this->_min_cost_flow.Flow(i) << "  / "
-                        << this->_min_cost_flow.Capacity(i) << "       " << cost << std::endl;
+
+            if (cost == 0) continue;
+
+            int p = this->_min_cost_flow.Tail(i);
+            int t = this->_min_cost_flow.Head(i) - this->_instance.n;
+            this->_solution.assign(t, p);
+
+            this->_objective_value += cost / 10;
+
+            /* 
+            std::cout << p << " -> " << t
+                        << "  " << flow << "  / "
+                        << this->_min_cost_flow.Capacity(i) << "       " << cost << std::endl; 
+            */
         }
     } else {
         std::cout << "Solving the min cost flow problem failed. Solver status: "
                 << status << std::endl;
     }
+
+    // Record the solution status.
+    this->_solution_status = status;
+
+    // Record the solution time.
+    auto end = std::chrono::steady_clock::now();
+    this->_solution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 }
 
 double MinCostFlowSolver::getObjectiveValue() const {
@@ -104,14 +128,12 @@ void MinCostFlowSolver::_createMinCostFlowNetwork() {
         this->_min_cost_flow.SetNodeSupply(i, supplies[i]);
     }
 
-    for (int i = 0; i < n*n; i++) {
+    /* for (int i = 0; i < n*n; i++) {
         std::cout << unit_costs[i] << " ";
-    }
+    } */
     std::cout << std::endl;
 }
 
 void MinCostFlowSolver::_createSolutionInfo() {
 
 }
-
-
