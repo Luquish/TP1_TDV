@@ -39,7 +39,7 @@ void MinCostFlowSolver::solve() {
             int t = this->_min_cost_flow.Head(i) - this->_instance.n;
 
             int64_t flow = this->_min_cost_flow.Flow(i);
-            int64_t cost = this->_min_cost_flow.Flow(i) * this->_min_cost_flow.UnitCost(i);
+            int64_t cost = flow * this->_min_cost_flow.UnitCost(i);
 
             if (flow == 0) continue;
             //if (cost == 0) continue;
@@ -50,7 +50,9 @@ void MinCostFlowSolver::solve() {
 
             this->_solution.assign(t, p);
 
-            this->_objective_value += cost / 10;
+            this->_objective_value += this->_min_cost_flow.UnitCost(i) / 10;
+
+            //this->_objective_value += cost / 10;
 
             //std::cout << "Objective Value: " << this->_objective_value << std::endl;
            
@@ -66,6 +68,7 @@ void MinCostFlowSolver::solve() {
     // Record the solution time.
     auto end = std::chrono::steady_clock::now();
     this->_solution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
 }
 
 double MinCostFlowSolver::getObjectiveValue() const {
