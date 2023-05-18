@@ -11,3 +11,4 @@ src/taxi_batching
 *.o
 src/.profile
 src/libs/or-tools_arm64/examples/
+src/libs/
