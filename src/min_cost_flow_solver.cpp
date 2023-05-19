@@ -4,6 +4,10 @@
 MinCostFlowSolver::MinCostFlowSolver() {}
 
 MinCostFlowSolver::MinCostFlowSolver(TaxiAssignmentInstance &instance) {
+    /*
+    *   Crea una instancia del solver de Min-Cost Flow.
+    */
+
     this->_instance = instance;
     this->_objective_value = 0;
     this->_cost_value = 0;
@@ -16,6 +20,10 @@ void MinCostFlowSolver::setInstance(TaxiAssignmentInstance &instance) {
 }
 
 void MinCostFlowSolver::solve() {
+    /*
+    *   Resuelve el problema de asignación de taxis utilizando un grafo de flujo de costo mínimo.
+    *   Guarda la solución en el atributo _solution.
+    */
 
     // Time solution
     auto start = std::chrono::steady_clock::now();

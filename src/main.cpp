@@ -55,15 +55,32 @@ void check_small1(){
 //https://books.google.ca/books?ei=KRkLSYLZEJ7ktQOX3-ChBQ&id=T89QAAAAMAAJ&dq=%22essentially+equal%22+%22approximately+equal%22+knuth&q=%22essentially+equal%22+%22approximately+equal%22+%22definitely+less+than%22&pgis=1&hl=en#search
 bool approximatelyEqual(float a, float b, float epsilon)
 {
+    /*
+    *   Devuelve true si los dos floats son iguales dentro de un margen de error epsilon.
+    */
     return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
 bool essentiallyEqual(float a, float b, float epsilon)
 {
+    /*
+    *   Devuelve true si los dos floats son iguales dentro de un margen de error epsilon.
+    */
     return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
 void batch_check(int n = 10, int sizes_n = 0){
+    /*
+    *   Corre el greedy solver y el min-cost-flow solver
+    *   Para los archivos de input/small_i.csv, input/medium_i.csv, input/large_i.csv, input/xl_i.csv
+    *   Opctionalmente se puede especificar el numero de archivos a correr con n
+    *   y el numero de tamaños de archivos a correr con sizes_n: 1 para small, 2 para small y medium, etc.
+    *   Si sizes_n = 0, se corren todos los tamaños.
+    * 
+    *   Utiliza un TaxiAssignmentChecker para verificar las soluciones.
+    *   Si los costos calculados internos a cada solver no son iguales a los calculados por el checker, sale del programa.
+    */
+
     std::vector<std::string> sizes = {"small", "medium", "large", "xl"};
 
     TaxiAssignmentChecker checker = TaxiAssignmentChecker();
@@ -144,6 +161,11 @@ void batch_check(int n = 10, int sizes_n = 0){
 }
 
 void write_solution_csv(std::string filename, TaxiAssignmentSolution &solution, TaxiAssignmentInstance &instance){
+    /*
+    *   Escribe la solucion en un archivo csv con el formato:
+    *   taxi_id,pax_id,dist
+    *   donde taxi_id es el id del taxi, pax_id es el id del pasajero asignado al taxi y dist es la distancia entre el taxi y el pasajero.
+    */
     std::ofstream file(filename);
 
     file << "taxi_id,pax_id,dist" << std::endl;

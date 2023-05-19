@@ -3,17 +3,23 @@
 GreedySolver::GreedySolver() {}
 
 GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
+    /*
+    *   Crea una instancia de la clase GreedySolver para resolver la instancia dada.
+    *   La resolución corresponde con la estrategia FCFS:
+    *       - En orden ascendente de pasajeros, a cada pasajero asignarle el taxi mas cercano que no haya sido asignado a otro pasajero
+    */
+
     this->_instance = instance;
     this->_objective_value = 0;
     
     /* 
-        NOT SOLVED = 0
-        OPTIMAL = 1
-        FEASIBLE = 2
-        INFEASIBLE = 3
-        UNBALANCED = 4
-        BAD_RESULT = 5
-        BAD COST RANGE = 6 
+    *   NOT SOLVED = 0
+    *   OPTIMAL = 1
+    *   FEASIBLE = 2
+    *   INFEASIBLE = 3
+    *   UNBALANCED = 4
+    *   BAD_RESULT = 5
+    *   BAD COST RANGE = 6 
     */
     this->_solution_status = 0;
 
@@ -25,6 +31,10 @@ void GreedySolver::setInstance(TaxiAssignmentInstance &instance) {
 }
 
 void GreedySolver::solve() {
+    /*
+    *   Resuelve la instancia recibida por parametro al constructor de forma greedy.
+    *   Guarda la solucion en el atributo _solution.
+    */
     
     // this->_instance, es la instancia de tipo TaxiAssignmentInstance
     // Al pasajero 0 le asigno el taxi mas cercano
@@ -92,13 +102,13 @@ TaxiAssignmentSolution GreedySolver::getSolution() const {
 
 int GreedySolver::getSolutionStatus() const {
     /*
-        NOT SOLVED = 0
-        OPTIMAL = 1
-        FEASIBLE = 2
-        INFEASIBLE = 3
-        UNBALANCED = 4
-        BAD_RESULT = 5
-        BAD COST RANGE = 6
+    *   NOT SOLVED = 0
+    *   OPTIMAL = 1
+    *   FEASIBLE = 2
+    *   INFEASIBLE = 3
+    *   UNBALANCED = 4
+    *   BAD_RESULT = 5
+    *   BAD COST RANGE = 6
     */
     return this->_solution_status;
 }
