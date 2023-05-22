@@ -59,9 +59,12 @@ void GreedySolver::solve() {
             }
         }
 
-        double min_di = this->_instance.dist[0][p];
+        double min_di = this->_instance.dist[min_tax][p];
 
         for (int t = 0; t < this->_instance.n; t++){
+
+            //std::cout << "t: " << t << ", p: " << p << ", min_di: " << min_di << ", dist: " << this->_instance.dist[t][p] << std::endl;
+
             if (this->_instance.dist[t][p] < min_di && !this->_solution.isTaxiAssigned(t)){
                 min_tax = t;
                 min_di = this->_instance.dist[t][p];

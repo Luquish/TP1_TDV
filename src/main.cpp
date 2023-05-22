@@ -81,6 +81,12 @@ void batch_check(int n = 10, int sizes_n = 0){
     *   Si los costos calculados internos a cada solver no son iguales a los calculados por el checker, sale del programa.
     */
 
+    std::string log_results_filename = "output/results.csv";
+    
+    std::ofstream log_file(log_results_filename);
+
+    log_file << "filename,n,greedy_cost,min_cost_flow_cost,greedy_time,min_cost_flow_time" << std::endl;
+
     std::vector<std::string> sizes = {"small", "medium", "large", "xl"};
 
     TaxiAssignmentChecker checker = TaxiAssignmentChecker();
@@ -101,11 +107,11 @@ void batch_check(int n = 10, int sizes_n = 0){
 
             // Greedy Solver
             
-            GreedySolver solver(instance);
+            GreedySolver greedy_solver(instance);
 
-            solver.solve();
+            greedy_solver.solve();
 
-            TaxiAssignmentSolution greedy_solution = solver.getSolution();
+            TaxiAssignmentSolution greedy_solution = greedy_solver.getSolution();
 
             //Min-Cost-Flow Solver
 
@@ -120,7 +126,7 @@ void batch_check(int n = 10, int sizes_n = 0){
 
             std::cout << "Greedy Solution Feasible: " << checker.checkFeasibility(instance, greedy_solution) << std::endl;
             double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
-            std::cout << "Greedy Objective Value: " << solver.getObjectiveValue() << std::endl;
+            std::cout << "Greedy Objective Value: " << greedy_solver.getObjectiveValue() << std::endl;
             std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
             
             //assert(greedy_cost == solver.getObjectiveValue());
@@ -134,7 +140,7 @@ void batch_check(int n = 10, int sizes_n = 0){
 
             assert(greedy_cost_int == solver_objective_value_int); */
             
-            assert(approximatelyEqual(greedy_cost, solver.getObjectiveValue(), 1e-5));
+            assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
 
 
             std::cout << std::endl;
@@ -142,7 +148,7 @@ void batch_check(int n = 10, int sizes_n = 0){
             std::cout << "Min Cost Flow Solution Feasible: " << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
             double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
             std::cout << "Min Cost Flow Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-            std::cout << "Min Cost Flow Solution Cost*: " << min_cost_flow_solver._cost_value << std::endl;
+            //std::cout << "Min Cost Flow Solution Cost*: " << min_cost_flow_solver._cost_value << std::endl;
             std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
 
             //assert(min_cost_flow_cost == min_cost_flow_solver.getObjectiveValue());
@@ -155,6 +161,8 @@ void batch_check(int n = 10, int sizes_n = 0){
             assert(approximatelyEqual(min_cost_flow_cost, min_cost_flow_solver.getObjectiveValue(), 1e-5));
 
             std::cout << std::endl;
+
+            log_file << filename << "," << instance.n << "," << greedy_cost << "," << min_cost_flow_cost << "," << greedy_solver.getSolutionTime() << "," << min_cost_flow_solver.getSolutionTime() << std::endl;
 
         }
     }
@@ -190,7 +198,7 @@ int main(int argc, char** argv) {
 
     batch_check();
 
-    // std::string filename = "input/small_0.csv";
+    // std::string filename = "input/small_1.csv";
 
     // TaxiAssignmentInstance instance(filename);
     // std::cout << filename << std::endl;
@@ -215,9 +223,9 @@ int main(int argc, char** argv) {
 
     // std::cout << greedy_checker.checkFeasibility(instance, greedy_solution) << std::endl;
 
-    //double greedy_cost = greedy_checker.getSolutionCost(instance, greedy_solution);
+    // double greedy_cost = greedy_checker.getSolutionCost(instance, greedy_solution);
 
-    //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
+    // std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
 
 
     // MinCostFlowSolver min_cost_flow_solver(instance);

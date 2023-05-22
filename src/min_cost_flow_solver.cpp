@@ -10,7 +10,7 @@ MinCostFlowSolver::MinCostFlowSolver(TaxiAssignmentInstance &instance) {
 
     this->_instance = instance;
     this->_objective_value = 0;
-    this->_cost_value = 0;
+    //this->_cost_value = 0;
     this->_solution_status = 0;
     this->_solution_time = 0;
 }
@@ -66,8 +66,8 @@ void MinCostFlowSolver::solve() {
             //this->_objective_value += this->_instance.dist[t][p];
 
             this->_objective_value += this->_min_cost_flow.UnitCost(i) / 10.0;
-            int64_t trunk_cost = this->_instance.dist[taxi][pax] * 10;
-            this->_cost_value += trunk_cost / 10.0;
+            //int64_t trunk_cost = this->_instance.dist[taxi][pax] * 10;
+            //this->_cost_value += trunk_cost / 10.0;
 
             //std::cout << p << " -> " << t << std::endl;
             //std::cout << "Trunk Cost: " << trunk_cost / 10.0 << " - Dist: " << this->_instance.dist[t][p] << std::endl;
