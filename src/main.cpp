@@ -3,6 +3,7 @@
 #include "checker.h"
 #include "greedy_solver.h"
 #include "min_cost_flow_solver.h"
+#include "taxi_assignment_batching_solver.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -30,7 +31,7 @@ void check_small1(){
 
     // Min-Cost-Flow Solver
 
-    MinCostFlowSolver min_cost_flow_solver(instance);
+    BatchingSolver min_cost_flow_solver(instance);
 
     min_cost_flow_solver.solve();
 
@@ -118,7 +119,7 @@ void batch_check(int n = 10, int sizes_n = 0){
 
             //Min-Cost-Flow Solver
 
-            MinCostFlowSolver min_cost_flow_solver(instance);
+            BatchingSolver min_cost_flow_solver(instance);
 
             min_cost_flow_solver.solve();
 
@@ -209,7 +210,7 @@ void fake_check(){
 
         //Min-Cost-Flow Solver
 
-        MinCostFlowSolver min_cost_flow_solver(instance);
+        BatchingSolver min_cost_flow_solver(instance);
 
         min_cost_flow_solver.solve();
 
@@ -234,7 +235,7 @@ void fake_check(){
         //std::cout << "Min Cost Flow Solution Cost*: " << min_cost_flow_solver._cost_value << std::endl;
         //std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
 
-        //assert(approximatelyEqual(min_cost_flow_cost, min_cost_flow_solver.getObjectiveValue(), 1e-5));
+        assert(approximatelyEqual(min_cost_flow_cost, min_cost_flow_solver.getObjectiveValue(), 1e-5));
 
         std::cout << std::endl;
 
@@ -273,15 +274,15 @@ void write_solution_csv(std::string filename, TaxiAssignmentSolution &solution, 
 int main(int argc, char** argv) {
     //check_small1();
 
-    //batch_check();
+    batch_check();
 
-    std::string path = "input/fake_instances/";
-    for (const auto & entry : fs::directory_iterator(path))
-        std::cout << entry.path() << std::endl;
+    //std::string path = "input/fake_instances/";
+    //for (const auto & entry : fs::directory_iterator(path))
+    //    std::cout << entry.path() << std::endl;
 
-    fake_check();
+    //fake_check();
 
-    // std::string filename = "input/small_1.csv";
+    // std::string filename = "input/fake_instances/small_test_5000.csv";
 
     // TaxiAssignmentInstance instance(filename);
     // std::cout << filename << std::endl;
@@ -297,7 +298,7 @@ int main(int argc, char** argv) {
     // TaxiAssignmentSolution greedy_solution = solver.getSolution();
 
     // std::cout << "Greedy Solution: " << std::endl;
-    // std::cout << greedy_solution << std::endl;
+    // // std::cout << greedy_solution << std::endl;
 
     // std::cout << "Objective Value: " << solver.getObjectiveValue() << std::endl;
     // std::cout << "Solution Time: " << solver.getSolutionTime() << std::endl;
@@ -311,7 +312,7 @@ int main(int argc, char** argv) {
     // std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
 
 
-    // MinCostFlowSolver min_cost_flow_solver(instance);
+    // BatchingSolver min_cost_flow_solver(instance);
 
     // min_cost_flow_solver.solve();
 
@@ -329,6 +330,10 @@ int main(int argc, char** argv) {
     // std::cout << "Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
     // std::cout << "Solution Time: " << min_cost_flow_solver.getSolutionTime() << std::endl;
 
+    // double gap = (solver.getObjectiveValue() - min_cost_flow_solver.getObjectiveValue()) / min_cost_flow_solver.getObjectiveValue();
+
+    // std::cout << "Gap: " << gap << std::endl;
+    
     // TaxiAssignmentChecker checker = TaxiAssignmentChecker();
 
     // std::cout << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;

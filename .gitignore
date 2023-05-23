@@ -12,3 +12,4 @@ src/taxi_batching
 src/.profile
 src/libs/or-tools_arm64/examples/
 src/libs/
+src/input/fake_instances

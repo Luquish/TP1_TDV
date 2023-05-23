@@ -10,7 +10,6 @@ MinCostFlowSolver::MinCostFlowSolver(TaxiAssignmentInstance &instance) {
 
     this->_instance = instance;
     this->_objective_value = 0;
-    //this->_cost_value = 0;
     this->_solution_status = 0;
     this->_solution_time = 0;
 }
@@ -155,6 +154,7 @@ void MinCostFlowSolver::_createMinCostFlowNetwork() {
     }
 
     // Add node supplies.
+    // The node supplies are the number of taxis (1) and paxs (-1).
     for (int i = 0; i < supplies.size(); ++i) {
         this->_min_cost_flow.SetNodeSupply(i, supplies[i]);
     }

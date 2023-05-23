@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -pedantic -std=c++17
 CFLAGS = -std=c++17
 INCDIRS = libs/or-tools_arm64/include/
 LIBDIRS = libs/or-tools_arm64/lib/
-SRC = taxi_assignment_instance.cpp taxi_assignment_solution.cpp checker.cpp greedy_solver.cpp min_cost_flow_solver.cpp main.cpp 
+SRC = taxi_assignment_instance.cpp taxi_assignment_solution.cpp checker.cpp greedy_solver.cpp taxi_assignment_batching_solver.cpp main.cpp 
 OBJ = $(SRC:.cpp=.o)
 EXEC = taxi_batching
 
