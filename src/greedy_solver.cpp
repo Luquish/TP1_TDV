@@ -91,6 +91,7 @@ void GreedySolver::solve() {
     //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     auto end = std::chrono::steady_clock::now();
     this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
+
 }
 
 double GreedySolver::getObjectiveValue() const {

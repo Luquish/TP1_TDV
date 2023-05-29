@@ -72,8 +72,8 @@ void BatchingSolver::solve() {
     }
 
     auto end = std::chrono::steady_clock::now();
-    this->_solution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
+    //this->_solution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
 }
 
 
@@ -149,3 +149,34 @@ int BatchingSolver::getSolutionStatus() const {
 double BatchingSolver::getSolutionTime() const {
     return this->_solution_time;
 }
+
+
+// -----------------------------
+
+/* 
+
+Explicación de BatchingSolver:
+
+BatchingSolver es una clase que resuelve el problema de asignación de taxis utilizando un grafo de flujo de costo mínimo.
+Para esto, utiliza la librería OR-Tools de Google.
+
+El constructor de BatchingSolver recibe una instancia del problema de asignación de taxis y la guarda en el atributo _instance.
+El método solve() resuelve el problema de asignación de taxis utilizando un grafo de flujo de costo mínimo.
+El grafo de flujo de costo mínimo se crea en el método _createMinCostFlowNetwork().
+
+_createMinCostFlowNetwork crea una red de flujo de costo mínimo utilizando la instancia guardada en _instance de la siguiente forma:
+
+- Crea un grafo con 2n nodos, donde los primeros n nodos representan a los taxis y los últimos n nodos representan a los pasajeros.
+- Crea un arco entre cada taxi y cada pasajero, de costo 10 * distancia(taxi, pasajero) y capacidad 1.
+- Crea un nodo source con supply 1 y un nodo sink con supply -1.
+
+Luego de crear la red de flujo de costo mínimo, se resuelve el problema utilizando el método Solve() de la librería OR-Tools.
+
+El método Solve() devuelve un status que indica si la solución es óptima o no.
+
+Si la solución es óptima, se recorren todos los arcos de la red de flujo de costo mínimo y se agregan a la solución los arcos que tienen flujo mayor a 0.
+
+El costo de la solución se calcula sumando los costos de los arcos de la solución.
+
+
+*/
