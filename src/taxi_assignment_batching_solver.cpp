@@ -1,11 +1,19 @@
 #include "taxi_assignment_batching_solver.h"
 
 
-BatchingSolver::BatchingSolver() {}
+BatchingSolver::BatchingSolver() {
+    /*
+    *   Crea una instancia del solver de Min-Cost Flow (Batching).
+    */
+    this->_objective_value = 0;
+    this->_solution_status = 0;
+    this->_solution_time = 0;
+}
 
 BatchingSolver::BatchingSolver(TaxiAssignmentInstance &instance) {
     /*
     *   Crea una instancia del solver de Min-Cost Flow (Batching).
+    *   Guarda la instancia en el atributo _instance.
     */
     this->_instance = instance;
     this->_objective_value = 0;
@@ -14,6 +22,9 @@ BatchingSolver::BatchingSolver(TaxiAssignmentInstance &instance) {
 }
 
 void BatchingSolver::setInstance(TaxiAssignmentInstance &instance) {
+    /*
+    *   Guarda la instancia en el atributo _instance.
+    */
     this->_instance = instance;
 }
 
