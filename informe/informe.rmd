@@ -125,15 +125,19 @@ La idea detrás de una estrategía de batching es agrupar los viajes de los pasa
 
 ![Batching Matching](imgs/batching.png)
 
+\newpage
+
 ### Modelo para estrategia de batching 
 
 Para la estrategia de batching, se plantea una red de flujo de costo mínimo, donde los nodos representan los taxis y los pasajeros, y las aristas representan los viajes que se pueden realizar. Cada arista tiene un costo asociado, que es la distancia que debe recorrer el taxi para llegar al pasajero. Además, cada arista tiene una capacidad asociada, que es la cantidad de viajes que puede realizar el taxi. La capacidad de las aristas que conectan los taxis con los pasajeros es $1$, ya que cada taxi solo puede realizar un viaje. La capacidad de las aristas que conectan los pasajeros con los taxis es la cantidad de taxis disponibles, ya que cada pasajero puede ser asignado a cualquier taxi. Por último, se agrega un nodo fuente ($s$) y un nodo sumidero ($t$), que representan los viajes que se pueden realizar. El nodo fuente tiene una arista que lo conecta con cada taxi, con capacidad $1$ y costo $0$. El nodo sumidero tiene una arista que lo conecta con cada pasajero, con capacidad $1$ y costo $0$. El objetivo es encontrar el flujo de costo mínimo que maximice la cantidad de viajes realizados.
 
+![Batching Matching Model](imgs/ej2.png)
+
 ### Implementación Batching 
 
-Para implementar el modelo de batching, se utilizó la librería [OR-TOOLS](https://developers.google.com/optimization/). Esta librería permite resolver problemas de optimización combinatoria, como el problema de flujo de costo mínimo. Para resolver el problema, se encapsuló la lógica de la librería en una clase llamada `BatchingSolver` que implementa el método `solve()`. 
+Para implementar el modelo de batching, se utilizó la librería [`OR-TOOLS`](https://developers.google.com/optimization/). Esta librería permite resolver problemas de optimización combinatoria, como el problema de flujo de costo mínimo. Para resolver el problema, se encapsuló la lógica de la librería en una clase llamada `BatchingSolver` que implementa el método `solve()`. 
 
-La clase BatchingSolver tiene dos constructores: uno sin argumentos y otro que recibe una instancia de `TaxiAssignmentInstance`. Estos constructores inicializan los atributos de la clase, como el valor objetivo, el estado de la solución y el tiempo de solución. El método `setInstance(`) se utiliza para establecer la instancia de `TaxiAssignmentInstance` en el atributo `_instance` de la clase.
+La clase BatchingSolver tiene dos constructores: uno sin argumentos y otro que recibe una instancia de `TaxiAssignmentInstance`. Estos constructores inicializan los atributos de la clase, como el valor objetivo, el estado de la solución y el tiempo de solución. El método `setInstance()` se utiliza para establecer la instancia de `TaxiAssignmentInstance` en el atributo `_instance` de la clase.
 
 El método `solve()` se encarga de resolver el problema de asignación de taxis utilizando un grafo de flujo de costo mínimo. Para ello, se lleva a cabo el proceso de creación de la red de flujo de costo mínimo por parte del método `_createMinCostFlowNetwork()` que se resuelve el problema utilizando el método `Solve()` del objeto `MinCostFlow` de la biblioteca `OR-TOOLS`. Luego, si la solución es óptima, se asignan los taxis a los pasajeros correspondientes y se calcula el costo de la solución.
 
@@ -151,7 +155,7 @@ Luego se establecen los suministros de cada nodo en la red utilizando el método
 
 Una vez que se han creado todos los arcos y se han establecido los suministros de los nodos, la red de flujo de costo mínimo está lista para ser utilizada en la resolución del problema.
 
-Al implementar nuestro modelo de batching, los nodos de fuente y sumidero no fueron necesarios ya que a diferencia de los grafos a los que estabamos acostumbrados a trabajar con caminos, la red de flujo de costo mínimo no tiene un nodo de inicio y un nodo de fin.
+Al implementar nuestro modelo de batching, los nodos de fuente y sumidero no fueron necesarios ya que a diferencia de los grafos a los que estabamos acostumbrados a trabajar con caminos, la red de flujo de costo mínimo no requiere de un nodo de inicio y un nodo de fin.
 
 ## Herramientas utilizadas
 
@@ -165,7 +169,7 @@ La forma en la que se utilizó `chrono` es la siguiente:
     * * * Código a cronometrar * * *
     auto time = std::chrono::duration<double, std::milli>(end - start).count();
 
-### Google OR-TOOLS 
+### Google OR-TOOLS
 
 Para implementar el modelo de batching, se utilizó la librería [OR-TOOLS](https://developers.google.com/optimization/). Esta librería permite resolver problemas de optimización combinatoria, como el problema de flujo de costo mínimo. Para resolver el problema de Batching se utilizo la clase `MinCostFlow` de la librería. Esta clase representa un grafo de flujo de costo mínimo. Para crear la red de flujo de costo mínimo, se utilizó el método `AddArcWithCapacityAndUnitCost()` de la clase `MinCostFlow`. Este método se encarga de agregar un arco a la red de flujo de costo mínimo. El método `Solve()` de la clase `MinCostFlow` se encarga de resolver el problema de flujo de costo mínimo.
 
@@ -245,7 +249,7 @@ A pesar de tener instancias con $n = 3, \dots, 498$, la tabla de la figura muest
 
 Al Scatter Plot lo acompaña una regresión logarítmica a partir de la media de las mejoras relativas para cada cantidad de pasajeros para poder observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros.
 
-A partir de estos resultados, interpretamos que, a medida que la cantidad de pasajeros crece, la mejora relativa de la solución obtenida por el algoritmo de batching respecto a la solución obtenida por el algoritmo greedy tiende a crecer cada vez mas lento. El valor de la mejora relativa tiende de forma logaritmica en un valor cercano a $~0.5$
+A partir de estos resultados, interpretamos que, a medida que la cantidad de pasajeros crece, la mejora relativa de la solución obtenida por el algoritmo de batching respecto a la solución obtenida por el algoritmo greedy tiende a crecer cada vez mas lento. El valor de la mejora relativa tiende de forma logaritmica en un valor cercano a $0.5$.
 
 <!--
 |   n |     mean |
@@ -263,11 +267,9 @@ A partir de estos resultados, interpretamos que, a medida que la cantidad de pas
 | 498 | 0.476677 |
 -->
 
-
-
 ### Tiempo de ejecución 
 
-La complejidad del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. Por otro lado, la complejidad del algoritmo de batching esta descripta en la [documentación de la clase MinCostFlow de OR-Tools](https://developers.google.com/optimization/reference/graph/min_cost_flow), y es $O(n^2*m*log(n*C))$ 
+La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. La complejidad del algoritmo de batching esta descripta en la [documentación de la clase MinCostFlow de OR-Tools](https://developers.google.com/optimization/reference/graph/min_cost_flow), y es $O(n^2*m*log(n*C))$ 
 
 ![Greedy vs Batching Time](../src/output/figures/greedy_vs_batching_time.png)
 
