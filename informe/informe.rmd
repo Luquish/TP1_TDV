@@ -84,6 +84,8 @@ Para ampliar y mejorar la resolución del problema, se puede observar la <u>[est
 En nuestro caso, podemos asumir que los $n$ vehículos disponibles y los $n$ pasajeros solicitan un viaje en un lapso de tiempo pequeño, algunos pocos segundos, en los cuales el correspondiente usuario está esperando una repuesta (ya sea pasajero, con su vehículo asignado, o un vehículo, con su pasajero). Luego, el objetivo es formular un modelo que tome una decisión global, indicando qué vehículo es asignado a cada pasajero.
 Inicialmente, consideramos como métrica de éxito la minimización de la distancia recorrida por los vehículos hasta la ubicación de su pasajero asignado. Dado que asumimos la oferta y demanda balanceada, todos los pedidos deben ser cumplidos. Nuestro objetivo es proveer evidencia basándonos en datos y metodología formal respecto a la mejora en la distancia total recorrida por los vehiculos. Esta métrica se puede utilizar como un proxy de los costos y tiempos de espera de los pasajeros, bajo la hipótesis que la distancia tiene algún tipo de correlación con estos otros factores.
 
+\newpage
+
 # Resolución del problema
 
 Contamos con un desarrollo básico nuestro problema, incluyendo una clase TaxiAssignmentInstance que se encarga de leer la definición de una instancia del problema de un archivo de entrada. La misma contiene los siguientes atributos:
@@ -106,19 +108,33 @@ Cada grupo posee 10 instancias distintas, a fin de agregar variabilidad en los e
 
 A partir de estas instancias, se obtiene un conjunto discreto de resultados en $n$, por lo que para expandir y generalizar la evaluación de los resultados, se generaron tambien, para cada $n \in [3, 500]$, 10 instancias con datos aleatorios de las mismas características que las instancias de los sets de datos originales. Estas instancias se utilizaron para evaluar el comportamiento de los algoritmos a medida que aumenta la cantidad de vehículos y pasajeros de forma mas continua.
 
+\newpage
+
 ## Algoritmo 1: Greedy Solver (FCFS)
 
 Como plantea la consigna, el primer approach a la asignacion de taxis a pasajeros se moldea a partir de una estrategia FCFS (First Come, First Served). En este caso, se considera a los pasajeros por orden de llegada y a cada pasajero se le asigna el vehículo más cercano.
 
 ![Greedy Solver](imgs/greedy.png)
 
-### Implementación FCFS 
+### Implementación FCFS
 
 El algoritmo comienza creando una instancia de la clase `GreedySolver` y guarda la instancia del problema de asignación de taxis y su valor objetivo en variables internas. También inicializa el estado de la solución y el tiempo de ejecución.
 
-El método `solve()` es el corazón del algoritmo. Comienza inicializando una solución vacía, representada por el objeto `TaxiAssignmentSolution`. Luego, itera sobre cada pasajero en orden ascendente. Para cada pasajero, se busca el taxi más cercano que aún no haya sido asignado a otro pasajero. Esto se realiza mediante un bucle que busca el primer taxi disponible. Una vez encontrado, se asigna ese taxi como el mínimo temporal y se procede a comparar la distancia entre el taxi mínimo y el pasajero actual con la distancia de otros taxis no asignados. Si se encuentra un taxi más cercano, se actualiza el taxi mínimo y su distancia.
+El método `solve()` es el corazón del algoritmo. Comienza inicializando una solución vacía, representada por el objeto `TaxiAssignmentSolution`. Luego, itera sobre cada pasajero en orden ascendente. Para cada pasajero, se busca el taxi más cercano que __aún no haya sido asignado__ a otro pasajero. Esto se realiza mediante un bucle que busca el primer taxi disponible. Una vez encontrado, se asigna ese taxi como el mínimo temporal y se procede a comparar la distancia entre el taxi mínimo y el pasajero actual con la distancia de otros taxis no asignados. Si se encuentra un taxi más cercano, se actualiza el taxi mínimo y su distancia.
 
 Después de asignar todos los pasajeros, se registra el tiempo de ejecución, el valor objetivo y el estado de la solución. El estado de la solución es analogo al descripto en la [documentación de `OR-TOOLS`](http://google.github.io/or-tools/python/ortools/graph/pywrapgraph.html#MinCostFlowBase).
+
+    enum Status {
+        NOT_SOLVED,
+        OPTIMAL,
+        FEASIBLE,
+        INFEASIBLE,
+        UNBALANCED,
+        BAD_RESULT,
+        BAD_COST_RANGE
+    };
+
+\newpage
 
 ## Algoritmo 2: Batching Matching
 
@@ -135,6 +151,8 @@ El grafo resultante $G$ tiene la siguiente estructura:
 $$
 G = (V, E)
 $$
+
+\newpage
 
 Donde $V$ es el conjunto de nodos y $E$ es el conjunto de aristas. 
 
@@ -187,6 +205,8 @@ Una vez que se han creado todos los arcos y se han establecido los suministros d
 
 Al implementar nuestro modelo de batching, los nodos de fuente y sumidero no fueron necesarios ya que a diferencia de los grafos a los que estabamos acostumbrados a trabajar con caminos, la red de flujo de costo mínimo no requiere de un nodo de inicio y un nodo de fin.
 
+\newpage
+
 ## Herramientas utilizadas
 
 ### Chrono C++ 
@@ -224,16 +244,16 @@ La siguiente tabla detalla un resumen de los resultados obtenidos:
 
 A simple vista podemos ver que la media del valor objetivo de la solución obtenida por el algoritmo de batching es menor que la del algoritmo greedy ($587.278$ vs $696.783$). Esto indica que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy. Sin embargo, el tiempo de ejecución del algoritmo de batching es mucho mayor que el del algoritmo greedy. Esto se debe a que el algoritmo de batching utiliza un modelo de programación lineal entera, mientras que el algoritmo greedy es mucho más simple y no requiere de un modelo matemático.
 
+\newpage
+
 ## Análisis de resultados 
 
 ### Distancia total recorrida 
 
-Para comparar los resultados obtenidos por los algoritmos, se utiliza el valor objetivo de la solución. En cada caso, se mide la mejora porcentual obtenida. Sean $z_b$ y $z_g$ el valor de la función objetivo de una solución del modelo para el batching y el de FCFS, respectivamente. Definimos la mejora relativa como
+Para comparar los resultados obtenidos por los algoritmos, se utiliza el valor objetivo de la solución. En cada caso, se mide la mejora porcentual obtenida. Sean $z_b$ y $z_g$ el valor de la función objetivo de una solución del modelo para el batching y el de FCFS, respectivamente. Definimos la mejora relativa y aplicamos la formula a los resultados obtenidos:
 $$
     \%\text{gap}= \frac{z_g - z_b}{z_b}
 $$
-
-Aplicando esta formula a los resultados obtenidos, se obtienen los siguientes valores de mejora relativa:
 
 |   n |   greedy_cost |   min_cost_flow_cost |      gap |
 |----:|--------------:|---------------------:|---------:|
@@ -243,9 +263,7 @@ Aplicando esta formula a los resultados obtenidos, se obtienen los siguientes va
 | 500 |       1553.29 |              1326.82 | 0.171215 |
 
 
-A simple vista parece ser que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy, ya que la mejora relativa es positiva en todos los casos. Sin embargo, no podemos afirmar esto sin hacer un test de hipotesis. Buscaremos observar entonces la progresión de la mejora relativa a medida que aumenta la cantidad de pasajeros.
-
-Para obtener una mejor idea de la distribución de los datos, se graficó un histograma de los valores objetivo de las soluciones obtenidas por cada algoritmo. Sin embargo resulta mas util un scatter plot de los valores objetivo de las soluciones obtenidas por cada algoritmo.
+A simple vista parece ser que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy, ya que la mejora relativa es positiva en todos los casos. Sin embargo, no podemos afirmar esto sin hacer un test de hipotesis. Buscaremos observar entonces la progresión de la mejora relativa a medida que aumenta la cantidad de pasajeros. Para obtener una mejor idea de la distribución de los datos, se graficó un histograma de los valores objetivo de las soluciones obtenidas por cada algoritmo asi tambien como sus distribuciones para cada $n$ pasajeros.
 
 <!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching.png)-->
 
@@ -264,7 +282,7 @@ Para obtener una mejor idea de la distribución de los datos, se graficó un his
 
 Es en este gráfico se puede ver que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros. Esto indica que el algoritmo de batching obtiene soluciones más __consistentes__ que el algoritmo greedy a mayor cantidad de pasajeros. Sin embargo parece ser que la media de las mejoras relativas disminuye a medida que aumenta la cantidad de pasajeros.
 
-Para expandir este análisis, se realizó la misma evaluación pero sobre las ~5000 instancias generadas aleatoriamente. 
+Para expandir el análisis, se realizó la misma evaluación sobre las ~5000 instancias generadas aleatoriamente. 
 
 \newpage
 

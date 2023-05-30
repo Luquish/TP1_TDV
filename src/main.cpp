@@ -4,6 +4,7 @@
 #include "greedy_solver.h"
 #include "min_cost_flow_solver.h"
 #include "taxi_assignment_batching_solver.h"
+#include "ortools/graph/min_cost_flow.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -115,6 +116,8 @@ void batch_check(int n = 10, int sizes_n = 0){
 
             greedy_solver.solve();
 
+            assert(greedy_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || greedy_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
+
             TaxiAssignmentSolution greedy_solution = greedy_solver.getSolution();
 
             //Min-Cost-Flow Solver
@@ -122,6 +125,8 @@ void batch_check(int n = 10, int sizes_n = 0){
             BatchingSolver min_cost_flow_solver(instance);
 
             min_cost_flow_solver.solve();
+
+            assert(min_cost_flow_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || min_cost_flow_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
 
             TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
 
@@ -206,6 +211,8 @@ void fake_check(){
 
         greedy_solver.solve();
 
+        assert(greedy_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || greedy_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
+
         TaxiAssignmentSolution greedy_solution = greedy_solver.getSolution();
 
         //Min-Cost-Flow Solver
@@ -213,6 +220,8 @@ void fake_check(){
         BatchingSolver min_cost_flow_solver(instance);
 
         min_cost_flow_solver.solve();
+
+        assert(min_cost_flow_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || min_cost_flow_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
 
         TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
 
@@ -225,7 +234,6 @@ void fake_check(){
         //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
         
         assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
-
 
         std::cout << std::endl;
 

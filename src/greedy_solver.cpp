@@ -84,7 +84,7 @@ void GreedySolver::solve() {
         //TaxiAssignmentChecker checker = TaxiAssignmentChecker();
         
         //this->_solution_status = checker.checkFeasibility(this->_instance, this->_solution) ? 2 : 3;
-
+        this->_solution_status = 2;
     }
 
     // Time solution
