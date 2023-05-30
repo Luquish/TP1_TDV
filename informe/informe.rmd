@@ -40,7 +40,8 @@ output:
         2. [Google OR-TOOLS](#google-or-tools)
 3. [Comparación de resultados](#comparación-de-resultados)
     1. [Obtención de resultados](#obtención-de-resultados)
-    2. [Análisis de resultados](#análisis-de-resultados)
+    2. [Instancias Aleatorias](#instancias-aleatorias)
+    3. [Análisis de resultados](#análisis-de-resultados)
         1. [Distancia total recorrida](#distancia-total-recorrida)
         2. [Tiempo de ejecución](#tiempo-de-ejecución)
 
@@ -227,7 +228,6 @@ A simple vista podemos ver que la media del valor objetivo de la solución obten
 
 ### Distancia total recorrida 
 
-
 Para comparar los resultados obtenidos por los algoritmos, se utiliza el valor objetivo de la solución. En cada caso, se mide la mejora porcentual obtenida. Sean $z_b$ y $z_g$ el valor de la función objetivo de una solución del modelo para el batching y el de FCFS, respectivamente. Definimos la mejora relativa como
 $$
     \%\text{gap}= \frac{z_g - z_b}{z_b}
@@ -268,6 +268,8 @@ Para expandir este análisis, se realizó la misma evaluación pero sobre las ~5
 
 \newpage
 
+### Instancias aleatorias
+
 <!--![Greedy vs Batching Cost - Random Instances](../src/output/figures/gap_vs_n_fake_scatter.png)-->
 
 <!--![Greedy vs Batching Cost Log Regression - Random Instances](../src/output/figures/gap_avg_vs_n_fake_scatter_log_reg.png)-->
@@ -277,15 +279,11 @@ Para expandir este análisis, se realizó la misma evaluación pero sobre las ~5
 
 <!--![Greedy vs Batching Cost - Random Instances](../src/output/figures/gap_vs_n_fake_box_scatter.png)-->
 
-Nuevamente se observa que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros.
-
-Para observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros, se realizó una regresión logarítmica sobre la media de las mejoras relativas para cada cantidad de pasajeros.
+Nuevamente se observa que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros. Para observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros, se realizó una regresión logarítmica sobre la media de las mejoras relativas para cada cantidad de pasajeros.
 
 ![Greedy vs Batching Cost Log Regression - Random Instances](../src/output/figures/gap_avg_vs_n_fake_scatter_log_reg_table.png)
 
-A pesar de tener instancias con $n = 3, \dots, 498$, la tabla de la figura muestra las medias de las mejoras relativas para las cantidades de pasajeros de 50 en 50 para reducirla.
-
-Al Scatter Plot lo acompaña una regresión logarítmica a partir de la media de las mejoras relativas para cada cantidad de pasajeros para poder observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros.
+A pesar de tener instancias con $n = 3, \dots, 498$, la tabla de la figura muestra las medias de las mejoras relativas para las cantidades de pasajeros de 50 en 50 para reducirla. Al Scatter Plot lo acompaña una regresión logarítmica a partir de la media de las mejoras relativas para cada cantidad de pasajeros para poder observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros.
 
 A partir de estos resultados, interpretamos que, a medida que la cantidad de pasajeros crece, la mejora relativa de la solución obtenida por el algoritmo de batching respecto a la solución obtenida por el algoritmo greedy tiende a crecer cada vez mas lento. El valor de la mejora relativa tiende de forma logaritmica en un valor cercano a $0.5$.
 
