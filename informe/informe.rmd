@@ -117,7 +117,7 @@ El algoritmo comienza creando una instancia de la clase `GreedySolver` y guarda 
 
 El método `solve()` es el corazón del algoritmo. Comienza inicializando una solución vacía, representada por el objeto `TaxiAssignmentSolution`. Luego, itera sobre cada pasajero en orden ascendente. Para cada pasajero, se busca el taxi más cercano que aún no haya sido asignado a otro pasajero. Esto se realiza mediante un bucle que busca el primer taxi disponible. Una vez encontrado, se asigna ese taxi como el mínimo temporal y se procede a comparar la distancia entre el taxi mínimo y el pasajero actual con la distancia de otros taxis no asignados. Si se encuentra un taxi más cercano, se actualiza el taxi mínimo y su distancia.
 
-Después de asignar todos los pasajeros, se registra el tiempo de ejecución, el valor objetivo y el estado de la solución. El estado de la solución es analogo al descripto en la [documentación de OR-TOOLS](http://google.github.io/or-tools/python/ortools/graph/pywrapgraph.html#MinCostFlowBase).
+Después de asignar todos los pasajeros, se registra el tiempo de ejecución, el valor objetivo y el estado de la solución. El estado de la solución es analogo al descripto en la [documentación de `OR-TOOLS`](http://google.github.io/or-tools/python/ortools/graph/pywrapgraph.html#MinCostFlowBase).
 
 ## Algoritmo 2: Batching Matching
 
@@ -125,11 +125,40 @@ La idea detrás de una estrategía de batching es agrupar los viajes de los pasa
 
 ![Batching Matching](imgs/batching.png)
 
-\newpage
-
 ### Modelo para estrategia de batching 
 
 Para la estrategia de batching, se plantea una red de flujo de costo mínimo, donde los nodos representan los taxis y los pasajeros, y las aristas representan los viajes que se pueden realizar. Cada arista tiene un costo asociado, que es la distancia que debe recorrer el taxi para llegar al pasajero. Además, cada arista tiene una capacidad asociada, que es la cantidad de viajes que puede realizar el taxi. La capacidad de las aristas que conectan los taxis con los pasajeros es $1$, ya que cada taxi solo puede realizar un viaje. La capacidad de las aristas que conectan los pasajeros con los taxis es la cantidad de taxis disponibles, ya que cada pasajero puede ser asignado a cualquier taxi. Por último, se agrega un nodo fuente ($s$) y un nodo sumidero ($t$), que representan los viajes que se pueden realizar. El nodo fuente tiene una arista que lo conecta con cada taxi, con capacidad $1$ y costo $0$. El nodo sumidero tiene una arista que lo conecta con cada pasajero, con capacidad $1$ y costo $0$. El objetivo es encontrar el flujo de costo mínimo que maximice la cantidad de viajes realizados.
+
+El grafo resultante $G$ tiene la siguiente estructura:
+
+$$
+G = (V, E)
+$$
+
+Donde $V$ es el conjunto de nodos y $E$ es el conjunto de aristas. 
+
+Los nodos se dividen en 3 conjuntos:
+
+$$
+V = \{V_{taxis}, V_{pasajeros}, V_{fuente-sumidero}\}
+$$
+
+$V_{taxis}$ es el conjunto de nodos que representan a los taxis, $V_{pasajeros}$ es el conjunto de nodos que representan a los pasajeros y $V_{fuente-sumidero}$ es el conjunto de nodos que representan a la fuente y al sumidero. Los nodos de $V_{taxis}$ y $V_{pasajeros}$ se definen de la siguiente forma:
+
+$$
+\begin{aligned}
+V_{taxis} &= \{t_1, t_2, ..., t_m\} \\
+V_{pasajeros} &= \{p_1, p_2, ..., p_n\}
+\end{aligned}
+$$
+
+Luego, el conjunto de aristas $E$ se define de la siguiente forma:
+
+$$
+E = (t_i, p_j, d_{ij}, 1) \forall t_i \in V_{taxis}, p_j \in V_{pasajeros}
+$$
+
+Siendo $d_{ij}$ la distancia entre el taxi $t_i$ y el pasajero $p_j$.
 
 ![Batching Matching Model](imgs/ej2.png)
 
@@ -147,11 +176,11 @@ Primero, se obtiene el número de taxis y pasajeros de la instancia guardada en 
 
 El siguiente paso es llenar los vectores start_nodes, end_nodes y unit_costs con la información necesaria para crear los arcos de la red. Los vértices de la red se indexan de $0$ a $2n-1$, donde los primeros n representan a los taxis y los últimos n representan a los pasajeros.
 
-Se recorren todos los taxis y pasajeros y se establecen las conexiones entre ellos. Cada conexión representa un arco en la red de flujo de costo mínimo. Los arcos tienen una capacidad de 1 (ya que cada taxi solo puede atender a un pasajero) y un costo unitario que se calcula como 10 veces la distancia entre el taxi y el pasajero. El factor de escala de 10 se utiliza para que los costos sean enteros y no de tipo `double`.
+Se recorren todos los taxis y pasajeros y se establecen las conexiones entre ellos. Cada conexión representa un arco en la red de flujo de costo mínimo. Los arcos tienen una capacidad de $1 $(ya que cada taxi solo puede atender a un pasajero) y un costo unitario que se calcula como $10$ veces la distancia entre el taxi y el pasajero. El factor de escala de 10 se utiliza para que los costos sean enteros y no de tipo `double`.
 
-Después de llenar los vectores con la información de los arcos, se crea la red de flujo de costo mínimo en el atributo `_min_cost_flow` utilizando el objeto MinCostFlow. Se agrega cada arco a la red utilizando el método `AddArcWithCapacityAndUnitCost()`.
+Después de llenar los vectores con la información de los arcos, se crea la red de flujo de costo mínimo en el atributo `_min_cost_flow` utilizando el objeto `MinCostFlow`. Se agrega cada arco a la red utilizando el método `AddArcWithCapacityAndUnitCost()`.
 
-Luego se establecen los suministros de cada nodo en la red utilizando el método SetNodeSupply(). Los taxis tienen un suministro de 1, lo que indica que pueden atender a un pasajero, mientras que los pasajeros tienen un suministro de -1, lo que indica que necesitan ser atendidos por un taxi.
+Luego se establecen los suministros de cada nodo en la red utilizando el método `SetNodeSupply()`. Los taxis tienen un suministro de $1$, lo que indica que pueden atender a un pasajero, mientras que los pasajeros tienen un suministro de $-1$, lo que indica que necesitan ser atendidos por un taxi.
 
 Una vez que se han creado todos los arcos y se han establecido los suministros de los nodos, la red de flujo de costo mínimo está lista para ser utilizada en la resolución del problema.
 
@@ -169,9 +198,9 @@ La forma en la que se utilizó `chrono` es la siguiente:
     * * * Código a cronometrar * * *
     auto time = std::chrono::duration<double, std::milli>(end - start).count();
 
-### Google OR-TOOLS
+### Google `OR-TOOLS`
 
-Para implementar el modelo de batching, se utilizó la librería [OR-TOOLS](https://developers.google.com/optimization/). Esta librería permite resolver problemas de optimización combinatoria, como el problema de flujo de costo mínimo. Para resolver el problema de Batching se utilizo la clase `MinCostFlow` de la librería. Esta clase representa un grafo de flujo de costo mínimo. Para crear la red de flujo de costo mínimo, se utilizó el método `AddArcWithCapacityAndUnitCost()` de la clase `MinCostFlow`. Este método se encarga de agregar un arco a la red de flujo de costo mínimo. El método `Solve()` de la clase `MinCostFlow` se encarga de resolver el problema de flujo de costo mínimo.
+Para implementar el modelo de batching, se utilizó la librería [`OR-TOOLS`](https://developers.google.com/optimization/). Esta librería permite resolver problemas de optimización combinatoria, como el problema de flujo de costo mínimo. Para resolver el problema de Batching se utilizo la clase `MinCostFlow` de la librería. Esta clase representa un grafo de flujo de costo mínimo. Para crear la red de flujo de costo mínimo, se utilizó el método `AddArcWithCapacityAndUnitCost()` de la clase `MinCostFlow`. Este método se encarga de agregar un arco a la red de flujo de costo mínimo. El método `Solve()` de la clase `MinCostFlow` se encarga de resolver el problema de flujo de costo mínimo.
 
 # Comparación de resultados
 
@@ -214,7 +243,7 @@ Aplicando esta formula a los resultados obtenidos, se obtienen los siguientes va
 | 500 |       1553.29 |              1326.82 | 0.171215 |
 
 
-A simple vista parece ser que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy. Sin embargo, no podemos afirmar esto sin hacer un test de hipotesis. Buscaremos observar entonces la progresión de la mejora relativa a medida que aumenta la cantidad de pasajeros.
+A simple vista parece ser que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy, ya que la mejora relativa es positiva en todos los casos. Sin embargo, no podemos afirmar esto sin hacer un test de hipotesis. Buscaremos observar entonces la progresión de la mejora relativa a medida que aumenta la cantidad de pasajeros.
 
 Para obtener una mejor idea de la distribución de los datos, se graficó un histograma de los valores objetivo de las soluciones obtenidas por cada algoritmo. Sin embargo resulta mas util un scatter plot de los valores objetivo de las soluciones obtenidas por cada algoritmo.
 
@@ -222,8 +251,9 @@ Para obtener una mejor idea de la distribución de los datos, se graficó un his
 
 <!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter.png)-->
 
-![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_and_bar.png)
+<!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_and_bar.png)-->
 
+![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_bar_box.png)
 
 |   n |   count |     mean |       std |       min |      25% |      50% |      75% |      max |
 |----:|--------:|---------:|----------:|----------:|---------:|---------:|---------:|---------:|
@@ -232,7 +262,7 @@ Para obtener una mejor idea de la distribución de los datos, se graficó un his
 | 250 |      10 | 0.212157 | 0.0599257 | 0.144362  | 0.157622 | 0.201565 | 0.267717 | 0.299222 |
 | 500 |      10 | 0.171215 | 0.0305612 | 0.135713  | 0.143316 | 0.170003 | 0.198171 | 0.216486 |
 
-Es en este gráfico donde se puede ver que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros. Esto indica que el algoritmo de batching obtiene soluciones más __consistentes__ que el algoritmo greedy a mayor cantidad de pasajeros.
+Es en este gráfico se puede ver que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros. Esto indica que el algoritmo de batching obtiene soluciones más __consistentes__ que el algoritmo greedy a mayor cantidad de pasajeros. Sin embargo parece ser que la media de las mejoras relativas disminuye a medida que aumenta la cantidad de pasajeros.
 
 Para expandir este análisis, se realizó la misma evaluación pero sobre las ~5000 instancias generadas aleatoriamente. 
 
@@ -242,8 +272,16 @@ Para expandir este análisis, se realizó la misma evaluación pero sobre las ~5
 
 <!--![Greedy vs Batching Cost Log Regression - Random Instances](../src/output/figures/gap_avg_vs_n_fake_scatter_log_reg.png)-->
 
-![Greedy vs Batching Cost Log Regression - Random Instances](../src/output/figures/gap_avg_vs_n_fake_scatter_log_reg_table.png)
+<!--![Greedy vs Batching Cost - Random Instances](../src/output/figures/gap_vs_n_fake_box.png)-->
+![Greedy vs Batching Cost - std - Random Instances](../src/output/figures/gap_vs_n_fake_box_std.png)
 
+<!--![Greedy vs Batching Cost - Random Instances](../src/output/figures/gap_vs_n_fake_box_scatter.png)-->
+
+Nuevamente se observa que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros.
+
+Para observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros, se realizó una regresión logarítmica sobre la media de las mejoras relativas para cada cantidad de pasajeros.
+
+![Greedy vs Batching Cost Log Regression - Random Instances](../src/output/figures/gap_avg_vs_n_fake_scatter_log_reg_table.png)
 
 A pesar de tener instancias con $n = 3, \dots, 498$, la tabla de la figura muestra las medias de las mejoras relativas para las cantidades de pasajeros de 50 en 50 para reducirla.
 
@@ -267,9 +305,11 @@ A partir de estos resultados, interpretamos que, a medida que la cantidad de pas
 | 498 | 0.476677 |
 -->
 
+\newpage
+
 ### Tiempo de ejecución 
 
-La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. La complejidad del algoritmo de batching esta descripta en la [documentación de la clase MinCostFlow de OR-Tools](https://developers.google.com/optimization/reference/graph/min_cost_flow), y es $O(n^2*m*log(n*C))$ 
+La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. La complejidad del algoritmo de batching esta descripta en la [documentación de la clase `MinCostFlow` de `OR-TOOLS`](https://developers.google.com/optimization/reference/graph/min_cost_flow), y es $O(n^2*m*log(n*C))$ 
 
 ![Greedy vs Batching Time](../src/output/figures/greedy_vs_batching_time.png)
 
@@ -282,4 +322,4 @@ De modo empírico, se observó que el algoritmo greedy es mucho más rápido que
 # Referencias
 
 - [1] [Uber Matching Batching](https://www.uber.com/us/en/marketplace/matching/)
-- [2] [Min Cost Flow - OR-Tools](https://developers.google.com/optimization/reference/graph/min_cost_flow)
+- [2] [Min Cost Flow - OR-TOOLS](https://developers.google.com/optimization/reference/graph/min_cost_flow)
