@@ -44,14 +44,15 @@ output:
     3. [Análisis de resultados](#análisis-de-resultados)
         1. [Distancia total recorrida](#distancia-total-recorrida)
         2. [Tiempo de ejecución](#tiempo-de-ejecución)
-4. [Taxi Priority](#taxi-priority)
-   1. [Motivación](#motivación)
-   2. [Modelo y Algoritmo de PrioritySolver](#modelo-y-algoritmo-de-prioritysolver)
-   3. [Resultados](#resultados)
-      1. [Comparación de soluciones en Instancias Originales](#comparación-de-soluciones-en-instancias-originales)
-      2. [Comparación de soluciones en Instancias Aleatorias](#comparación-de-soluciones-en-instancias-aleatorias)
-      3. [Comparación de tiempos de ejecución entre PrioritySolver y Batching en Instancias Aleatorias](#comparación-de-tiempos-de-ejecución-entre-prioritysolver-y-batching-en-instancias-aleatorias)
+4. [Un nuevo modelo: Taxi Priority](#un-nuevo-modelo-taxi-priority)
+    1. [Motivación](#motivación)
+    2. [Modelo y Algoritmo PrioritySolver](#modelo-y-algoritmo-prioritysolver)
+    3. [Resultados](#resultados)
+        1. [Comparación de soluciones en Instancias Originales](#comparación-de-soluciones-en-instancias-originales)
+        2. [Comparación de soluciones en Instancias Aleatorias](#comparación-de-soluciones-en-instancias-aleatorias)
+        3. [Comparación de tiempos de ejecución entre PrioritySolver y Batching en Instancias Aleatorias](#comparación-de-tiempos-de-ejecución-entre-prioritysolver-y-batching-en-instancias-aleatorias)
 5. [Conclusiones](#conclusiones)
+6. [Referencias](#referencias)
 
 \newpage
 
@@ -341,7 +342,7 @@ De modo empírico, se observó que el algoritmo greedy es mucho más rápido que
 
 \newpage
 
-# Taxi Priority
+# Un nuevo modelo: Taxi Priority
 
 ## Motivación
 
@@ -354,7 +355,7 @@ Para mitigar este problema, se planteo un nuevo algoritmo para la asignación de
 
 De esta forma, nuestra nueva metrica a optimizar es una función de la distancia del viaje y la distancia del Taxi al Pasajero resultando en un algoritmo _Taxi Centered_, es decir que prioriza los viajes más rentables para los conductores.
 
-## Modelo y Algoritmo de `PrioritySolver`
+## Modelo y Algoritmo `PrioritySolver`
 
 Como la cuestión a resolver es minimizar el costo total de asignar los Taxis a los Pasajeros, se define la función de costo unitario como la distancia entre el Taxi y el Pasajero dividido la distancia del viaje del Pasajero. De esta forma, se busca minimizar el costo unitario de asignar un Taxi a un Pasajero. Por ejemplo, si tenemos un Taxi $t_i$ y un Pasajero $p_j$ donde:
 
@@ -400,6 +401,8 @@ $$
 
 Los resultados nos muestran como el modelo de `PrioritySolver` obtiene soluciones con un costo objetivo cercano, aunque mayor, al modelo de `Batching` pero de todas formas menor que el modelo `Greedy`. Como la resolución por `Batching` resulta en la asignación óptima, es esperado que su función de valor objetivo actúe de cota inferior para los otros modelos.
 
+\newpage
+
 ### Comparación de soluciones en Instancias Aleatorias
 
 Al igual que en la experimentación de `Batching`, se utilizaron las mismas $~5000$ instancias generadas de forma aleatoria para comparar ahora con el nuevo modelo `PrioritySolver`.
@@ -417,12 +420,14 @@ En la experimentación se observan comportamientos analogos en cuanto a tiempos 
 
 ![](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
 
+\newpage
+
 # Conclusiones
 
 El modelo de `PrioritySolver` prioriza los viajes más rentables para los conductores, mientras que el modelo de `Batching` prioriza los viajes más rentables para la asignación total, y el modelo `Greedy` prioriza los viajes más rentables para los pasajeros.
 
 # Referencias
 
-- [1] [Uber Matching Batching](https://www.uber.com/us/en/marketplace/matching/)
-- [2] [Min Cost Flow - OR-TOOLS](https://developers.google.com/optimization/reference/graph/min_cost_flow)
+- [1] [Uber Matching Batching https://www.uber.com/us/en/marketplace/matching/](https://www.uber.com/us/en/marketplace/matching/)
+- [2] [Min Cost Flow - OR-TOOLS https://developers.google.com/optimization/reference/graph/min_cost_flow](https://developers.google.com/optimization/reference/graph/min_cost_flow)
 - [3] [Finding Minimum-Cost Circulations by Successive Approximation](https://dl.acm.org/doi/10.1287/moor.15.3.430) Andrew V. Goldberg, Robert E. Tarjan, (1990) Finding Minimum-Cost Circulations by Successive Approximation. Mathematics of Operations Research 15(3):430-466.
