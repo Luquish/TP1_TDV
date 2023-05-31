@@ -325,7 +325,7 @@ A partir de estos resultados, interpretamos que, a medida que la cantidad de pas
 
 ### Tiempo de ejecución 
 
-La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. La complejidad del algoritmo de batching esta descripta en la [documentación de la clase `MinCostFlow` de `OR-TOOLS`](https://developers.google.com/optimization/reference/graph/min_cost_flow), y es $O(n^2*m*log(n*C))$ 
+La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. La complejidad del algoritmo de batching es $O(n^2*m*log(n*C))$ por la complejidad de resolver el flujo máximo de costo minimo que esta descripta en la [documentación de la clase `MinCostFlow` de `OR-TOOLS`](https://developers.google.com/optimization/reference/graph/min_cost_flow) a partir del algoritmo propuesto en "Finding Minimum-Cost Circulations by Successive Approximation" de Goldberg y Tarjan.
 
 ![Greedy vs Batching Time](../src/output/figures/greedy_vs_batching_time.png)
 
@@ -344,7 +344,7 @@ Para mitigar este problema, se planteo un nuevo algoritmo para la asignación de
 - La distancia entre el Taxi y el Pasajero
 - La distancia del viaje del Pasajero
 
-De esta forma, nuestra nueva metrica a mejorar es una función de la distancia del viaje y la distancia del Taxi al Pasajero resultando en un algoritmo _Taxi Centered_, es decir que prioriza los viajes más rentables para los conductores.
+De esta forma, nuestra nueva metrica a optimizar es una función de la distancia del viaje y la distancia del Taxi al Pasajero resultando en un algoritmo _Taxi Centered_, es decir que prioriza los viajes más rentables para los conductores.
 
 ## Modelo y Algoritmo de `PrioritySolver`
 
@@ -358,10 +358,10 @@ El costo unitario de asignar el Taxi al Pasajero es $\frac{\text{Distance}(t_i, 
 A modo de implementacíon, optamos por multiplicar el costo unitario por 100, para poder trabajar con números enteros, pero a su vez, mantener cierta precisión al estar hablando de un ratio de distancias. De esta forma, el costo unitario queda definido como:
 
 $$
-\text{Unit Cost}(t_i, p_j) = 100 * \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \quad \forall t_i \in T, p_j \in P
+\text{Taxi Cost}(t_i, p_j) = 100 * \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \quad \forall t_i \in T, p_j \in P
 $$
 
-La relación entre la distancia del Taxi al Pasajero y el costo unitario es inversamente proporcional, es decir que a menor distancia, mayor costo unitario. Por otro lado, la relación entre la distancia del viaje del Pasajero y el costo unitario es directamente proporcional, es decir que a mayor distancia, mayor costo unitario. De esta forma, buscamos minimizar el costo unitario, es decir que se priorizan los Taxis más cercanos a los Pasajeros que tienen viajes más largos.
+La relación entre la distancia del Taxi al Pasajero y el costo unitario es directamente proporcional, es decir que a mayor distancia, mayor costo unitario. Por otro lado, la relación entre la distancia del viaje del Pasajero y el costo unitario es inversamente proporcional, es decir que a mayor distancia, menor costo unitario. De esta forma, buscamos minimizar el costo unitario, es decir que se priorizan los Taxis más cercanos a los Pasajeros que tienen viajes más largos. Llamemos entonces al total de costos unitarios de asignar los Taxis a los Pasajeros para una solución como "Costo de Taxistas".
 
 Este problema lo podemos modelar nuevamente como un problema de flujo de costo mínimo, donde los nodos son los Taxis, los Pasajeros y el nodo fuente y sumidero. Las aristas son las conexiones entre los Taxis y los Pasajeros, pero en este caso el costo de cada arista es el nuevo costo unitario de asignar el Taxi al Pasajero. La capacidad de cada arista es 1, ya que cada Taxi solo puede ser asignado a un Pasajero.
 
@@ -369,24 +369,52 @@ Este problema lo podemos modelar nuevamente como un problema de flujo de costo m
 
 ## Resultados
 
+En la experimentación se plantearon las siguientes cuestiones a comparar a través de los modelos.
 
+- Los costos objetivos de las soluciones obtenidas por cada modelo.
+- La nueva metrica de Costo de Taxistas.
+- Los tiempos de ejecución de cada modelo.
 
 ### Comparación de soluciones en Instancias Originales
 
+Inicialmente evaluamos los tres modelos en las instancias originales.
+
 ![](../src/output/figures/results_combined_original.png)
 
+Como la función de costo unitario del modelo de `Batching` es directamente proporcional con la función de costo unitario de `Priority` ya que ambas dependen directamente de la distancia entre el Taxi y el Pasajero de la siguiente forma:
+
+$$
+\begin{aligned}
+\text{Batching UnitCost}(t_i, p_j) &= 10 \times \text{Distance}(t_i, p_j) \quad \forall t_i \in T, p_j \in P \\
+\text{Priority UnitCost}(t_i, p_j) &= 100 \times \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \quad \forall t_i \in T, p_j \in P
+\end{aligned}
+$$
+
+Los resultados nos muestran como el modelo de `PrioritySolver` obtiene soluciones con un costo objetivo cercano, aunque mayor, al modelo de `Batching` pero de todas formas menor que el modelo `Greedy`. Como la resolución por `Batching` resulta en la asignación óptima, es esperado que su función de valor objetivo actúe de cota inferior para los otros modelos.
+
 ### Comparación de soluciones en Instancias Aleatorias
+
+Al igual que en la experimentación de `Batching`, se utilizaron las mismas $~5000$ instancias generadas de forma aleatoria para comparar ahora con el nuevo modelo `PrioritySolver`.
 
 ![](../src/output/figures/solutions_random.png)
 ![](../src/output/figures/taxi_priorities_random_grouped.png)
 
-### Comparación de tiempos de ejecución entre `PrioritySolver` y `MinCostFlow` en Instancias Aleatorias
+Podemos observar el mismo comportamiento que comportamiento que en las instancias originales, donde el modelo `PrioritySolver` obtiene soluciones con un costo objetivo cercano al modelo de `Batching` y menor que el modelo `Greedy`.
+
+### Comparación de tiempos de ejecución entre `PrioritySolver` y `Batching` en Instancias Aleatorias
+
+Como nuestro nuevo modelo resulta de una red de flujo máximo de costo minimo de la misma cantidad de nodos y arcos que el modelo de Batching, sus complejidades algoritmicas son iguales.
+
+En la experimentación se observan comportamientos analogos en cuanto a tiempos de ejecución.
 
 ![](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
 
 # Conclusiones
 
+El modelo de `PrioritySolver` prioriza los viajes más rentables para los conductores, mientras que el modelo de `Batching` prioriza los viajes más rentables para la asignación total, y el modelo `Greedy` prioriza los viajes más rentables para los pasajeros.
+
 # Referencias
 
 - [1] [Uber Matching Batching](https://www.uber.com/us/en/marketplace/matching/)
 - [2] [Min Cost Flow - OR-TOOLS](https://developers.google.com/optimization/reference/graph/min_cost_flow)
+- [3] [Finding Minimum-Cost Circulations by Successive Approximation](https://dl.acm.org/doi/10.1287/moor.15.3.430) Andrew V. Goldberg, Robert E. Tarjan, (1990) Finding Minimum-Cost Circulations by Successive Approximation. Mathematics of Operations Research 15(3):430-466.
