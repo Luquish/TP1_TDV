@@ -1,6 +1,13 @@
 #include "greedy_solver.h"
 
-GreedySolver::GreedySolver() {}
+GreedySolver::GreedySolver() {
+    /*
+    *   Crea una instancia de la clase GreedySolver.
+    */
+    this->_objective_value = 0;
+    this->_solution_status = 0;
+    this->_solution_time = 0;
+}
 
 GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
     /*
@@ -11,7 +18,6 @@ GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
 
     this->_instance = instance;
     this->_objective_value = 0;
-    
     /* 
     *   NOT SOLVED = 0
     *   OPTIMAL = 1
@@ -22,7 +28,6 @@ GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
     *   BAD COST RANGE = 6 
     */
     this->_solution_status = 0;
-
     this->_solution_time = 0;
 }
 

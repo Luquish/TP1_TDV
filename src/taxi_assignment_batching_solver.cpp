@@ -97,16 +97,17 @@ void BatchingSolver::_createMinCostFlowNetwork() {
     * Los primeros n son los taxis [0, n-1]
     * Los ultimos n son los pasajeros [n, 2n-1]
     * Ademas, los costos entre taxis y pasajeros son 10 * distancia(taxi, pasajero)
-    * 10 es un factor de escala para que los costos sean enteros
+    * 10 es un factor de escala para que los costos sean enteros y no decimales.
     */
 
     int cnt = 0;
-    for (int i = 0; i < this->_instance.n; i++) {
+    for (int taxi = 0; taxi < this->_instance.n; taxi++) {
         for (int j = this->_instance.n; j < 2*this->_instance.n; j++) {
             // capacities are always 1, defined when initialized.
-            start_nodes[cnt] = i;
+            int pax = j - n;
+            start_nodes[cnt] = taxi;
             end_nodes[cnt] = j;
-            unit_costs[cnt] = 10*this->_instance.dist[i][j - n];
+            unit_costs[cnt] = 10*this->_instance.dist[taxi][pax];
             cnt++;
         }
     }

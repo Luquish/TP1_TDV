@@ -331,7 +331,17 @@ La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteraci
 
 De modo empírico, se observó que el algoritmo greedy es mucho más rápido que el algoritmo de batching. Obtenemos para el dominio $n = 1, \dots ,500$, la imagen del tiempo de ejecución del algoritmo greedy esta entre $0.001$ y $2.66279$ milisegundos, mientras que la imagen del tiempo de ejecución del algoritmo de batching esta entre $0.0$ y $151.0$ milisegundos. En el gráfico el tiempo de ejecución es el del promedio de las 10 ejecuciones de cada algoritmo para cada cantidad de pasajeros, las imagenes para estos resultados se encuentran entre $0$ y ~$1$ ms para el algoritmo greedy y entre $0$ y ~$70$ ms para el algoritmo de batching.
 
-# Otras ideas
+# Taxi Priorities
+
+## Comparación de soluciones en Instancias Originales
+![](../src/output/figures/results_combined_original.png)
+
+## Comparación de soluciones en Instancias Aleatorias
+![](../src/output/figures/solutions_random.png)
+![](../src/output/figures/taxi_priorities_random_grouped.png)
+
+### Comparación de tiempos de ejecución
+![](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
 
 # Conclusiones
 
