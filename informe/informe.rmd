@@ -331,16 +331,57 @@ La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteraci
 
 De modo empírico, se observó que el algoritmo greedy es mucho más rápido que el algoritmo de batching. Obtenemos para el dominio $n = 1, \dots ,500$, la imagen del tiempo de ejecución del algoritmo greedy esta entre $0.001$ y $2.66279$ milisegundos, mientras que la imagen del tiempo de ejecución del algoritmo de batching esta entre $0.0$ y $151.0$ milisegundos. En el gráfico el tiempo de ejecución es el del promedio de las 10 ejecuciones de cada algoritmo para cada cantidad de pasajeros, las imagenes para estos resultados se encuentran entre $0$ y ~$1$ ms para el algoritmo greedy y entre $0$ y ~$70$ ms para el algoritmo de batching.
 
-# Taxi Priorities
+\newpage
 
-## Comparación de soluciones en Instancias Originales
+# Taxi Priority
+
+## Motivación
+
+En base a encuestas realizadas a los conductores en general, las aplicaciones sugieren muchas veces viajes que demandan una distancia considerable para llegar a la ubicación del pasajero, para luego realizar un muy viaje corto en comparación. En este sentido, la sensación de los conductores es que es mucho el costo de buscar el pasajero, ya sea en costo específico o en el tiempo utilizado y que podrían destinar a un viaje más rentable, en relación al beneficio obtenido por el viaje en sí mismo.
+
+Para mitigar este problema, se planteo un nuevo algoritmo para la asignación de Taxis a Pasajeros teniendo en cuenta:
+
+- La distancia entre el Taxi y el Pasajero
+- La distancia del viaje del Pasajero
+
+De esta forma, nuestra nueva metrica a mejorar es una función de la distancia del viaje y la distancia del Taxi al Pasajero resultando en un algoritmo _Taxi Centered_, es decir que prioriza los viajes más rentables para los conductores.
+
+## Modelo y Algoritmo de `PrioritySolver`
+
+Como la cuestión a resolver es minimizar el costo total de asignar los Taxis a los Pasajeros, se define la función de costo unitario como la distancia entre el Taxi y el Pasajero dividido la distancia del viaje del Pasajero. De esta forma, se busca minimizar el costo unitario de asignar un Taxi a un Pasajero. Por ejemplo, si tenemos un Taxi $t_i$ y un Pasajero $p_j$ donde:
+
+- La distancia entre el Taxi y el Pasajero es $\text{Distance}(t_i, p_i) = 10$
+- La distancia del viaje del Pasajero es $\text{Distance}(p_i) = 20$
+
+El costo unitario de asignar el Taxi al Pasajero es $\frac{\text{Distance}(t_i, p_i)}{\text{Distance}(p_i)} = \frac{10}{20} = 0.5$. 
+
+A modo de implementacíon, optamos por multiplicar el costo unitario por 100, para poder trabajar con números enteros, pero a su vez, mantener cierta precisión al estar hablando de un ratio de distancias. De esta forma, el costo unitario queda definido como:
+
+$$
+\text{Unit Cost}(t_i, p_j) = 100 * \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \quad \forall t_i \in T, p_j \in P
+$$
+
+La relación entre la distancia del Taxi al Pasajero y el costo unitario es inversamente proporcional, es decir que a menor distancia, mayor costo unitario. Por otro lado, la relación entre la distancia del viaje del Pasajero y el costo unitario es directamente proporcional, es decir que a mayor distancia, mayor costo unitario. De esta forma, buscamos minimizar el costo unitario, es decir que se priorizan los Taxis más cercanos a los Pasajeros que tienen viajes más largos.
+
+Este problema lo podemos modelar nuevamente como un problema de flujo de costo mínimo, donde los nodos son los Taxis, los Pasajeros y el nodo fuente y sumidero. Las aristas son las conexiones entre los Taxis y los Pasajeros, pero en este caso el costo de cada arista es el nuevo costo unitario de asignar el Taxi al Pasajero. La capacidad de cada arista es 1, ya que cada Taxi solo puede ser asignado a un Pasajero.
+
+\newpage
+
+## Resultados
+
+
+
+### Comparación de soluciones en Instancias Originales
+
 ![](../src/output/figures/results_combined_original.png)
 
-## Comparación de soluciones en Instancias Aleatorias
+### Comparación de soluciones en Instancias Aleatorias
+
 ![](../src/output/figures/solutions_random.png)
 ![](../src/output/figures/taxi_priorities_random_grouped.png)
 
-### Comparación de tiempos de ejecución
+### Comparación de tiempos de ejecución entre `PrioritySolver` y `MinCostFlow` en Instancias Aleatorias
+
 ![](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
 
 # Conclusiones

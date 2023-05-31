@@ -78,10 +78,11 @@ bool essentiallyEqual(float a, float b, float epsilon)
 }
 
 
-void taxi_priority_check(TaxiAssignmentSolution &priority_solution, TaxiAssignmentSolution &min_cost_flow_solution, TaxiAssignmentInstance &instance, std::ofstream &log_file, double priority_solver_taxi_cost){
+void taxi_priority_check(TaxiAssignmentSolution &priority_solution, TaxiAssignmentSolution &min_cost_flow_solution, TaxiAssignmentSolution &greedy_solution, TaxiAssignmentInstance &instance, std::ofstream &log_file, double priority_solver_taxi_cost){
     
     double avg_priority_ratio = 0;
     double avg_min_cost_flow_ratio = 0;
+    double avg_greedy_ratio = 0;
 
     for (int taxi = 0; taxi < instance.n; taxi++){
     
@@ -89,14 +90,11 @@ void taxi_priority_check(TaxiAssignmentSolution &priority_solution, TaxiAssignme
         double priority_trip_dist = instance.pax_trip_dist[priority_pax];
         double priority_search_dist = instance.dist[taxi][priority_pax];
         
-        //double priority_ratio = 100 * (priority_trip_dist / priority_search_dist);
-
         double priority_ratio;
         if (priority_trip_dist == 0){
             priority_ratio = 0;   
         }
         else{
-            //priority_ratio = 100 * (priority_trip_dist / priority_search_dist);
             priority_ratio = 100 * (priority_search_dist / priority_trip_dist);
         }
 
@@ -104,29 +102,32 @@ void taxi_priority_check(TaxiAssignmentSolution &priority_solution, TaxiAssignme
         double min_cost_flow_trip_dist = instance.pax_trip_dist[min_cost_flow_pax];
         double min_cost_flow_search_dist = instance.dist[taxi][min_cost_flow_pax];
 
-        // double min_cost_flow_ratio = 100 * (min_cost_flow_trip_dist / min_cost_flow_search_dist);
         double min_cost_flow_ratio;
         if (min_cost_flow_trip_dist == 0){
             min_cost_flow_ratio = 0;
         }
         else{
-            //min_cost_flow_ratio = 100 * (min_cost_flow_trip_dist / min_cost_flow_search_dist);
             min_cost_flow_ratio = 100 * (min_cost_flow_search_dist / min_cost_flow_trip_dist);
         }
 
-        //std::cout << "Priority Ratio: " << priority_ratio << std::endl;
-        //std::cout << "Min Cost Flow Ratio: " << min_cost_flow_ratio << std::endl;
+        int greedy_pax = greedy_solution.getAssignedPax(taxi);
+        double greedy_trip_dist = instance.pax_trip_dist[greedy_pax];
+        double greedy_search_dist = instance.dist[taxi][greedy_pax];
 
+        double greedy_ratio;
+        if (greedy_trip_dist == 0){
+            greedy_ratio = 0;
+        }
+        else{
+            greedy_ratio = 100 * (greedy_search_dist / greedy_trip_dist);
+        }
+        
         avg_priority_ratio += priority_ratio / instance.n;
         avg_min_cost_flow_ratio += min_cost_flow_ratio / instance.n;
+        avg_greedy_ratio += greedy_ratio / instance.n;
     }
 
-    //std::cout << "Average Priority Ratio: " << avg_priority_ratio << std::endl;
-    //std::cout << "True Objective Value: " << priority_solver.getTaxistObjectiveValue() * 100 / instance.n << std::endl;
-    //std::cout << "Average Min Cost Flow Ratio: " << avg_min_cost_flow_ratio << std::endl;
-
-    //avg_priority_ratio = priority_solver_taxi_cost * 100 / instance.n;
-    log_file << instance.n << "," << avg_priority_ratio << "," << avg_min_cost_flow_ratio << std::endl;
+    log_file << instance.n << "," << avg_priority_ratio << "," << avg_min_cost_flow_ratio << "," << avg_greedy_ratio << std::endl;
 }
 
 void batch_check(int n = 10, int sizes_n = 0, bool log = false){
@@ -150,7 +151,7 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
 
         std::string log_taxi_priority_filename = "output/taxi_priorities_original.csv";
         taxi_priority_log_file.open(log_taxi_priority_filename, std::ios_base::app);
-        taxi_priority_log_file << "n,avg_priority_ratio,avg_min_cost_flow_ratio" << std::endl;
+        taxi_priority_log_file << "n,avg_priority_ratio,avg_min_cost_flow_ratio,avg_greedy_ratio" << std::endl;
     }
     std::vector<std::string> sizes = {"small", "medium", "large", "xl"};
 
@@ -226,7 +227,7 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
             
             //std::cout << std::endl;
 
-            taxi_priority_check(priority_solution, min_cost_flow_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
+            taxi_priority_check(priority_solution, min_cost_flow_solution, greedy_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
 
             //std::cout << std::endl;
 
@@ -260,7 +261,7 @@ void fake_check(){
 
     std::ofstream taxi_priority_log_file(log_taxi_priority_filename);
 
-    taxi_priority_log_file << "n,avg_priority_ratio,avg_min_cost_flow_ratio" << std::endl;
+    taxi_priority_log_file << "n,avg_priority_ratio,avg_min_cost_flow_ratio,avg_greedy_ratio" << std::endl;
 
     TaxiAssignmentChecker checker = TaxiAssignmentChecker();
 
@@ -342,7 +343,7 @@ void fake_check(){
 
         assert(approximatelyEqual(priority_cost, priority_solver.getObjectiveValue(), 1e-5));
 
-        taxi_priority_check(priority_solution, min_cost_flow_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
+        taxi_priority_check(priority_solution, min_cost_flow_solution, greedy_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
 
         //std::cout << std::endl;
 
