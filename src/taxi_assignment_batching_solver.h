@@ -23,14 +23,10 @@ class BatchingSolver
         int getSolutionStatus() const;
         double getSolutionTime() const;
         
-        
-	
 	private:
-        // Completar con lo que sea necesario.
 
         operations_research::SimpleMinCostFlow _min_cost_flow;
         void _createMinCostFlowNetwork();
- 
 
         // Instance, problem and results attributes
         TaxiAssignmentInstance _instance;

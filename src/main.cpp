@@ -2,7 +2,6 @@
 #include "taxi_assignment_solution.h"
 #include "checker.h"
 #include "greedy_solver.h"
-//#include "min_cost_flow_solver.h"
 #include "taxi_assignment_batching_solver.h"
 #include "priority_solver.h"
 #include "ortools/graph/min_cost_flow.h"
@@ -11,53 +10,6 @@
 #include <limits>
 
 namespace fs = std::filesystem;
-
-void check_small1(){
-    std::string filename = "input/small_1.csv";
-
-    TaxiAssignmentInstance instance(filename);
-    std::cout << filename << std::endl;
-
-    // Greedy Solver
-
-    GreedySolver solver(instance);
-
-    solver.solve();
-
-    TaxiAssignmentSolution greedy_solution = solver.getSolution();
-
-    std::cout << "Greedy Solution: " << std::endl;
-    std::cout << greedy_solution << std::endl;
-
-    std::cout << "Objective Value: " << solver.getObjectiveValue() << std::endl;
-    std::cout << "Solution Time: " << solver.getSolutionTime() << std::endl;
-
-
-    // Min-Cost-Flow Solver
-
-    BatchingSolver min_cost_flow_solver(instance);
-
-    min_cost_flow_solver.solve();
-
-    TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
-
-    std::cout << "Min Cost Flow Solution: " << std::endl;
-    std::cout << min_cost_flow_solution << std::endl;
-
-    std::cout << "Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-    std::cout << "Solution Time: " << min_cost_flow_solver.getSolutionTime() << std::endl;
-
-    // Using a TaxiAssignmentChecker to check the solution
-
-    TaxiAssignmentChecker checker = TaxiAssignmentChecker();
-
-    double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
-    double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
-
-    std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
-    std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
-
-}
 
 //https://stackoverflow.com/a/253874
 //https://books.google.ca/books?ei=KRkLSYLZEJ7ktQOX3-ChBQ&id=T89QAAAAMAAJ&dq=%22essentially+equal%22+%22approximately+equal%22+knuth&q=%22essentially+equal%22+%22approximately+equal%22+%22definitely+less+than%22&pgis=1&hl=en#search
@@ -77,8 +29,95 @@ bool essentiallyEqual(float a, float b, float epsilon)
     return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
+void single_check(std::string filename) {
 
-void taxi_priority_check(TaxiAssignmentSolution &priority_solution, TaxiAssignmentSolution &min_cost_flow_solution, TaxiAssignmentSolution &greedy_solution, TaxiAssignmentInstance &instance, std::ofstream &log_file, double priority_solver_taxi_cost){
+    TaxiAssignmentInstance instance(filename);
+    std::cout << filename << std::endl;
+    std::cout << std::endl;
+
+
+    TaxiAssignmentChecker checker = TaxiAssignmentChecker();
+
+
+    // Greedy Solver
+
+    GreedySolver greedy_solver(instance);
+
+    greedy_solver.solve();
+
+    assert(greedy_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || greedy_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
+
+    TaxiAssignmentSolution greedy_solution = greedy_solver.getSolution();
+
+    std::cout << "Greedy Solution: " << std::endl;
+    std::cout << greedy_solution << std::endl;
+
+    std::cout << "Objective Value: " << greedy_solver.getObjectiveValue() << std::endl;
+    std::cout << "Solution Time: " << greedy_solver.getSolutionTime() << std::endl;
+    std::cout << std::endl;
+
+    double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
+    assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
+
+
+    // Batching Matching Solver
+
+    BatchingSolver min_cost_flow_solver(instance);
+
+    min_cost_flow_solver.solve();
+
+    assert(min_cost_flow_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || min_cost_flow_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
+
+    TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
+
+    std::cout << "Batching Matching Solution: " << std::endl;
+    std::cout << min_cost_flow_solution << std::endl;
+
+    std::cout << "Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
+    std::cout << "Solution Time: " << min_cost_flow_solver.getSolutionTime() << std::endl;
+    std::cout << std::endl;
+    
+    double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
+    assert(approximatelyEqual(min_cost_flow_cost, min_cost_flow_solver.getObjectiveValue(), 1e-5));
+
+
+    // Priority Solver
+
+    PrioritySolver priority_solver(instance);
+
+    priority_solver.solve();
+
+    assert(priority_solver.getSolutionStatus() == operations_research::MinCostFlow::OPTIMAL || priority_solver.getSolutionStatus() == operations_research::MinCostFlow::FEASIBLE);
+
+    TaxiAssignmentSolution priority_solution = priority_solver.getSolution();
+
+    std::cout << "Priority Solution: " << std::endl;
+    std::cout << priority_solution << std::endl;
+
+    std::cout << "Objective Value: " << priority_solver.getObjectiveValue() << std::endl;
+    std::cout << "Solution Time: " << priority_solver.getSolutionTime() << std::endl;
+    std::cout << std::endl;
+    
+    double priority_cost = checker.getSolutionCost(instance, priority_solution);
+    assert(approximatelyEqual(priority_cost, priority_solver.getObjectiveValue(), 1e-5));
+    
+
+    // Results
+
+    std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
+    std::cout << "Batching Matching Solution Cost: " << min_cost_flow_cost << std::endl;
+    std::cout << "Priority Solution Cost: " << priority_cost << std::endl;
+}
+
+void taxi_priority_cost(TaxiAssignmentSolution &priority_solution, TaxiAssignmentSolution &min_cost_flow_solution, TaxiAssignmentSolution &greedy_solution, TaxiAssignmentInstance &instance, std::ofstream &log_file, double priority_solver_taxi_cost){
+    /*
+    *  Dadas las soluciones greedy, batching y priority
+    *  Calcula el Costo de Taxistas de cada una y lo escribe en el archivo de log_file.
+    *  El Costo Unitario es la razon entre la distancia entre un taxista y su pasajero y la distancia del viaje del pasajero.
+    *  El Costo se multiplica por 100 para trabajar con enteros, pero sin perder presición.
+    *  Ademas permite tratar al costo unitario o ratio como un porcentaje.
+    *  El Costo de Taxistas es la suma de los Costos Unitarios de cada asignación.
+    */
     
     double avg_priority_ratio = 0;
     double avg_min_cost_flow_ratio = 0;
@@ -130,9 +169,9 @@ void taxi_priority_check(TaxiAssignmentSolution &priority_solution, TaxiAssignme
     log_file << instance.n << "," << avg_priority_ratio << "," << avg_min_cost_flow_ratio << "," << avg_greedy_ratio << std::endl;
 }
 
-void batch_check(int n = 10, int sizes_n = 0, bool log = false){
+void original_check(int n = 10, int sizes_n = 0, bool log = false){
     /*
-    *   Corre el greedy solver y el min-cost-flow solver
+    *   Corre el greedy solver, el batching solver y el priority solver
     *   Para los archivos de input/small_i.csv, input/medium_i.csv, input/large_i.csv, input/xl_i.csv
     *   Opctionalmente se puede especificar el numero de archivos a correr con n
     *   y el numero de tamaños de archivos a correr con sizes_n: 1 para small, 2 para small y medium, etc.
@@ -140,6 +179,8 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
     * 
     *   Utiliza un TaxiAssignmentChecker para verificar las soluciones.
     *   Si los costos calculados internos a cada solver no son iguales a los calculados por el checker, sale del programa.
+    * 
+    *   Si log = true, guarda los resultados en output/results.csv y output/taxi_priorities_original.csv
     */
     std::ofstream log_file;
     std::ofstream taxi_priority_log_file;
@@ -155,6 +196,7 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
     }
     std::vector<std::string> sizes = {"small", "medium", "large", "xl"};
 
+    // Using a TaxiAssignmentChecker to check the solution
     TaxiAssignmentChecker checker = TaxiAssignmentChecker();
 
     if (sizes_n == 0){
@@ -171,6 +213,7 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
             
             std::cout << "\r" << filename << std::flush;
 
+
             // Greedy Solver
             
             GreedySolver greedy_solver(instance);
@@ -181,7 +224,16 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
 
             TaxiAssignmentSolution greedy_solution = greedy_solver.getSolution();
 
-            //Min-Cost-Flow Solver
+            //std::cout << "Greedy Solution Feasible: " << checker.checkFeasibility(instance, greedy_solution) << std::endl;
+            double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
+            //std::cout << "Greedy Objective Value: " << greedy_solver.getObjectiveValue() << std::endl;
+            //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
+            //std::cout << std::endl;
+            
+            assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
+
+
+            //Batching Matching Solver
 
             BatchingSolver min_cost_flow_solver(instance);
 
@@ -191,24 +243,16 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
 
             TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
 
-            // Using a TaxiAssignmentChecker to check the solution
-            // Feasibility Check and Cost Check
-
-            //std::cout << "Greedy Solution Feasible: " << checker.checkFeasibility(instance, greedy_solution) << std::endl;
-            double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
-            //std::cout << "Greedy Objective Value: " << greedy_solver.getObjectiveValue() << std::endl;
-            //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
-            
-            assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
-
-            //std::cout << std::endl;
-
-            //std::cout << "Min Cost Flow Solution Feasible: " << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
+            //std::cout << "Batching Matching Solution Feasible: " << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
             double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
             //std::cout << "Min Cost Flow Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-            //std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
+            //std::cout << "Batching Matching Solution Cost: " << min_cost_flow_cost << std::endl;
+            //std::cout << std::endl;
 
             assert(approximatelyEqual(min_cost_flow_cost, min_cost_flow_solver.getObjectiveValue(), 1e-5));
+
+
+            // Priority Solver
             
             PrioritySolver priority_solver(instance);
 
@@ -222,14 +266,17 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
             double priority_cost = checker.getSolutionCost(instance, priority_solution);
             //std::cout << "Priority Objective Value: " << priority_solver.getObjectiveValue() << std::endl;
             //std::cout << "Priority Solution Cost: " << priority_cost << std::endl;
+            //std::cout << std::endl;
 
             assert(approximatelyEqual(priority_cost, priority_solver.getObjectiveValue(), 1e-5));
             
-            //std::cout << std::endl;
 
-            taxi_priority_check(priority_solution, min_cost_flow_solution, greedy_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
+            // Taxi Priorities
 
-            //std::cout << std::endl;
+            taxi_priority_cost(priority_solution, min_cost_flow_solution, greedy_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
+
+
+            // Log
 
             if (log)
                 log_file << filename << "," << instance.n << "," << greedy_cost << "," << min_cost_flow_cost << "," << greedy_solver.getSolutionTime() << "," << min_cost_flow_solver.getSolutionTime() << "," << priority_cost << "," << priority_solver.getSolutionTime() << std::endl;
@@ -242,13 +289,15 @@ void batch_check(int n = 10, int sizes_n = 0, bool log = false){
     }
 }
 
-void fake_check(){
+void random_check(std::string path){
     /*
-    *   Corre el greedy solver y el min-cost-flow solver
+    *   Corre el greedy solver, el batching solver y el priority solver
     *   Para los archivos de input/fake_instance_k_n.csv
+    *   Llamamos fake_instances a estos archivos porque no son las instancias originales, sino que son instancias generadas aleatoriamente.
     * 
     *   Utiliza un TaxiAssignmentChecker para verificar las soluciones.
     *   Si los costos calculados internos a cada solver no son iguales a los calculados por el checker, sale del programa.
+    *   Loguea los resultados en output/fake/results.csv y output/fake/taxi_priorities_random.csv
     */
 
     std::string log_results_filename = "output/fake/results.csv";
@@ -263,29 +312,19 @@ void fake_check(){
 
     taxi_priority_log_file << "n,avg_priority_ratio,avg_min_cost_flow_ratio,avg_greedy_ratio" << std::endl;
 
+    
     TaxiAssignmentChecker checker = TaxiAssignmentChecker();
 
     int fn = 0;
-    std::string path = "input/fake_instances/";
 
-    // std::string last_filename = "";
     for (const auto & entry : fs::directory_iterator(path)){
 
-        //std::cout << entry.path() << std::endl;
-
         std::string filename = entry.path().string();
-        /* std::cout << filename << std::endl; */
-        /* if (last_filename != "input/fake_instances/fake_368_6.csv"){ */
-        /*     last_filename = filename; */
-        /*     continue; */
-        /* } */
-
         if (filename == "input/fake_instances/.DS_Store")
             continue;
 
         TaxiAssignmentInstance instance(filename);
         
-
         std::cout << "\rProgress: " << fn << "/5000 - " << filename << std::flush;
         fn++;
 
@@ -299,7 +338,16 @@ void fake_check(){
 
         TaxiAssignmentSolution greedy_solution = greedy_solver.getSolution();
 
-        //Min-Cost-Flow Solver
+        //std::cout << "Greedy Solution Feasible: " << checker.checkFeasibility(instance, greedy_solution) << std::endl;
+        double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
+        //std::cout << "Greedy Objective Value: " << greedy_solver.getObjectiveValue() << std::endl;
+        //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
+        //std::cout << std::endl;
+        
+        assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
+
+
+        //Batching Matching Solver
 
         BatchingSolver min_cost_flow_solver(instance);
 
@@ -309,24 +357,15 @@ void fake_check(){
 
         TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
 
-        // Using a TaxiAssignmentChecker to check the solution
-        // Feasibility Check and Cost Check
-
-        //std::cout << "Greedy Solution Feasible: " << checker.checkFeasibility(instance, greedy_solution) << std::endl;
-        double greedy_cost = checker.getSolutionCost(instance, greedy_solution);
-        //std::cout << "Greedy Objective Value: " << greedy_solver.getObjectiveValue() << std::endl;
-        //std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
-        
-        assert(approximatelyEqual(greedy_cost, greedy_solver.getObjectiveValue(), 1e-5));
-
-        //std::cout << std::endl;
-
-        //std::cout << "Min Cost Flow Solution Feasible: " << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
+        //std::cout << "Batching Matching Solution Feasible: " << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
         double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
         //std::cout << "Min Cost Flow Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-        //std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
+        //std::cout << "Batching Matching Solution Cost: " << min_cost_flow_cost << std::endl;
 
         //assert(approximatelyEqual(min_cost_flow_cost, min_cost_flow_solver.getObjectiveValue(), 1e-5));
+
+
+        // Priority Solver
 
         PrioritySolver priority_solver(instance);
 
@@ -340,12 +379,17 @@ void fake_check(){
         double priority_cost = checker.getSolutionCost(instance, priority_solution);
         //std::cout << "Priority Objective Value: " << priority_solver.getObjectiveValue() << std::endl;
         //std::cout << "Priority Solution Cost: " << priority_cost << std::endl;
+        //std::cout << std::endl;
 
         assert(approximatelyEqual(priority_cost, priority_solver.getObjectiveValue(), 1e-5));
 
-        taxi_priority_check(priority_solution, min_cost_flow_solution, greedy_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
 
-        //std::cout << std::endl;
+        // Taxi Priorities
+
+        taxi_priority_cost(priority_solution, min_cost_flow_solution, greedy_solution, instance, taxi_priority_log_file, priority_solver.getTaxistObjectiveValue());
+
+
+        // Log  
 
         log_file << filename << "," << instance.n << "," << greedy_cost << "," << min_cost_flow_cost << "," << greedy_solver.getSolutionTime() << "," << min_cost_flow_solver.getSolutionTime() << "," << priority_cost << "," << priority_solver.getSolutionTime() << std::endl;
 
@@ -361,14 +405,11 @@ void write_solution_csv(std::string filename, TaxiAssignmentSolution &solution, 
     std::ofstream file(filename);
 
     file << "taxi_id,pax_id,dist" << std::endl;
-    //std::cout << solution << std::endl;
     for (int i = 0; i < instance.n; i++){
         int taxi = i;
         int pax = solution.getAssignedPax(i);
 
         double dist = instance.dist[taxi][pax];
-
-        //std::cout << taxi << "," << pax << "," << dist << std::endl;
 
         file << taxi << "," << pax << "," << dist << std::endl;
     }
@@ -377,87 +418,47 @@ void write_solution_csv(std::string filename, TaxiAssignmentSolution &solution, 
 }
 
 int main(int argc, char** argv) {
-    //check_small1();
-
-    batch_check(10, 4, true);
-
-    fake_check();
-
-   /*  std::string filename = "input/fake_instances/fake_368_6.csv";
-
-    TaxiAssignmentInstance instance(filename);
-    std::cout << filename << std::endl;
-
-    std::cout << "Number of Taxis: " << instance.n << std::endl;
-
-    PrioritySolver priority_solver(instance);
-    priority_solver.solve();
-
-    GreedySolver greedy_solver(instance);
-    greedy_solver.solve();
-
-    BatchingSolver min_cost_flow_solver(instance);
-    min_cost_flow_solver.solve();
-
-    std::cout << priority_solver.getObjectiveValue() << ", " << greedy_solver.getObjectiveValue() << ", " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-
-    TaxiAssignmentSolution priority_solution = priority_solver.getSolution();
-    TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
-
-    std::ofstream dummy_file("output/dummy.csv");
-    taxi_priority_check(priority_solution, min_cost_flow_solution, instance, dummy_file); */
-    // // Greedy Solver
-
-    // GreedySolver solver(instance);
-
-    // solver.solve();
-
-    // TaxiAssignmentSolution greedy_solution = solver.getSolution();
-
-    // std::cout << "Greedy Solution: " << std::endl;
-    // // std::cout << greedy_solution << std::endl;
-
-    // std::cout << "Objective Value: " << solver.getObjectiveValue() << std::endl;
-    // std::cout << "Solution Time: " << solver.getSolutionTime() << std::endl;
-
-    // TaxiAssignmentChecker greedy_checker = TaxiAssignmentChecker();
-
-    // std::cout << greedy_checker.checkFeasibility(instance, greedy_solution) << std::endl;
-
-    // double greedy_cost = greedy_checker.getSolutionCost(instance, greedy_solution);
-
-    // std::cout << "Greedy Solution Cost: " << greedy_cost << std::endl;
-
-
-    // BatchingSolver min_cost_flow_solver(instance);
-
-    // min_cost_flow_solver.solve();
-
-    // TaxiAssignmentSolution min_cost_flow_solution = min_cost_flow_solver.getSolution();
-
-    // Write to CSV
-
-    // std::string output_filename = "output/small_0_data.csv";
-
-    // write_solution_csv(output_filename, min_cost_flow_solution, instance);
-
-    // std::cout << "Min Cost Flow Solution: " << std::endl;
-    // std::cout << min_cost_flow_solution << std::endl;
-
-    // std::cout << "Objective Value: " << min_cost_flow_solver.getObjectiveValue() << std::endl;
-    // std::cout << "Solution Time: " << min_cost_flow_solver.getSolutionTime() << std::endl;
-
-    // double gap = (solver.getObjectiveValue() - min_cost_flow_solver.getObjectiveValue()) / min_cost_flow_solver.getObjectiveValue();
-
-    // std::cout << "Gap: " << gap << std::endl;
     
-    // TaxiAssignmentChecker checker = TaxiAssignmentChecker();
+    // Evaluacion de soluciones
 
-    // std::cout << checker.checkFeasibility(instance, min_cost_flow_solution) << std::endl;
+    if (argc >= 2 && std::string(argv[1]) == "-b"){
+        // Evaluar soluciones de greedy, batching y priority en las 40 instancias de input/small
+        std::cout << "Batch check" << std::endl;
 
-    // double min_cost_flow_cost = checker.getSolutionCost(instance, min_cost_flow_solution);
+        if (argc == 3 && std::string(argv[2]) == "-l")
+            original_check(10, 4, true);
+        else
+            original_check(10, 4, false);
+    }
+    else if (argc == 3 && std::string(argv[1]) == "-s"){
+        // Evaluar soluciones de greedy, batching y priority en un sola instancia
+        
+        std::cout << "Single check" << std::endl;
+        
+        single_check(argv[2]);
 
-    // std::cout << "Min Cost Flow Solution Cost: " << min_cost_flow_cost << std::endl;
+    }
+    else if (argc == 3 && std::string(argv[1]) == "-f"){
+        // Evaluar soluciones de greedy, batching y priority en las 5000 instancias de input/fake_instances
+        
+        std::cout << "Large check" << std::endl;
+
+        random_check(argv[2]);
+    }
+    else{
+        // Mostrar opciones
+        std::cout << "Options: " << std::endl;
+        std::cout << "    -b : Evaluar greedy, batching y priority en las 40 instancias de input/small" << std::endl;
+        std::cout << "    -b -l : Evaluar greedy, batching y priority en las 40 instancias de input/small y loguear" << std::endl;
+        std::cout << "    -s <filename> : Evaluar greedy, batching y priority en una sola instancia" << std::endl;
+        std::cout << "    -f <path> : Evaluar greedy, batching y priority en todas las instancias en <path>" << std::endl;
+        std::cout << std::endl;
+        
+        std::cout << "Corriendo Single Check Demo" << std::endl;
+        std::cout << std::endl;
+        
+        single_check("input/small_0.csv");
+    }
 
     return 0;
 }
