@@ -72,7 +72,7 @@ void PrioritySolver::solve() {
             this->_objective_value += this->_instance.dist[taxi][pax];
         }
     } else {
-        std::cout << "Solving the min cost flow problem failed. Solver status: "
+        std::cout << "Solving the taxi centered problem failed. Solver status: "
                 << this->_solution_status << std::endl;
     }
 

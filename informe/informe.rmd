@@ -44,6 +44,14 @@ output:
     3. [Análisis de resultados](#análisis-de-resultados)
         1. [Distancia total recorrida](#distancia-total-recorrida)
         2. [Tiempo de ejecución](#tiempo-de-ejecución)
+4. [Taxi Priority](#taxi-priority)
+   1. [Motivación](#motivación)
+   2. [Modelo y Algoritmo de PrioritySolver](#modelo-y-algoritmo-de-prioritysolver)
+   3. [Resultados](#resultados)
+      1. [Comparación de soluciones en Instancias Originales](#comparación-de-soluciones-en-instancias-originales)
+      2. [Comparación de soluciones en Instancias Aleatorias](#comparación-de-soluciones-en-instancias-aleatorias)
+      3. [Comparación de tiempos de ejecución entre PrioritySolver y Batching en Instancias Aleatorias](#comparación-de-tiempos-de-ejecución-entre-prioritysolver-y-batching-en-instancias-aleatorias)
+5. [Conclusiones](#conclusiones)
 
 \newpage
 
