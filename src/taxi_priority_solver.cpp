@@ -1,9 +1,9 @@
-#include "priority_solver.h"
+#include "taxi_priority_solver.h"
 #include <limits>
 
-PrioritySolver::PrioritySolver() {
+TaxiPrioritySolver::TaxiPrioritySolver() {
     /*
-    *   Crea una instancia del solver de Min-Cost Flow (Priority).
+    *   Crea una instancia del solver de Min-Cost Flow (TaxiPriority).
     */
     this->_objective_value = 0;
     this->_taxist_objective_value = 0;
@@ -11,9 +11,9 @@ PrioritySolver::PrioritySolver() {
     this->_solution_time = 0;
 }
 
-PrioritySolver::PrioritySolver(TaxiAssignmentInstance &instance) {
+TaxiPrioritySolver::TaxiPrioritySolver(TaxiAssignmentInstance &instance) {
     /*
-    *   Crea una instancia del solver de Min-Cost Flow (Priority).
+    *   Crea una instancia del solver de Min-Cost Flow (TaxiPriority).
     *   Guarda la instancia en el atributo _instance.
     */
     this->_instance = instance;
@@ -23,14 +23,14 @@ PrioritySolver::PrioritySolver(TaxiAssignmentInstance &instance) {
     this->_solution_time = 0;
 }
 
-void PrioritySolver::setInstance(TaxiAssignmentInstance &instance) {
+void TaxiPrioritySolver::setInstance(TaxiAssignmentInstance &instance) {
     /*
     *   Guarda la instancia en el atributo _instance.
     */
     this->_instance = instance;
 }
 
-void PrioritySolver::solve() {
+void TaxiPrioritySolver::solve() {
     /*
     *   Resuelve el problema de asignación de taxis utilizando un grafo de flujo de costo mínimo.
     *   Guarda la solución en el atributo _solution.
@@ -49,7 +49,7 @@ void PrioritySolver::solve() {
     this->_solution_status = this->_min_cost_flow.Solve();
 
     // Para esta instancia del algoritmo, ya se podría interrumpir el timer
-    // Pero consideramos que rellenar la solución compone terminar de resolver el problema de Priority.
+    // Pero consideramos que rellenar la solución compone terminar de resolver el problema de TaxiPriority.
 
     if (this->_solution_status == operations_research::MinCostFlow::OPTIMAL) {
         for (std::size_t i = 0; i < this->_min_cost_flow.NumArcs(); ++i) {
@@ -81,7 +81,7 @@ void PrioritySolver::solve() {
     this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
 }
 
-void PrioritySolver::_createMinCostFlowNetwork() {
+void TaxiPrioritySolver::_createMinCostFlowNetwork() {
     /*
     *   Crea la red de flujo de costo mínimo para el problema de asignación de taxis.
     *   Utiliza la instancia guardada en _instance.
@@ -152,11 +152,11 @@ void PrioritySolver::_createMinCostFlowNetwork() {
         this->_min_cost_flow.SetNodeSupply(i, supplies[i]);
     }
 }
-double PrioritySolver::getObjectiveValue() const {
+double TaxiPrioritySolver::getObjectiveValue() const {
     return this->_objective_value;
 }
 
-double PrioritySolver::getTaxistObjectiveValue() const {
+double TaxiPrioritySolver::getTaxistObjectiveValue() const {
     /*
     *   El Taxist Objective value es la nueva métrica a partir de la cual se evaluará la calidad de la solución.
     *   Tiene en cuenta el costo de búsqueda de los taxis y el costo de viaje de los pasajeros.
@@ -165,14 +165,14 @@ double PrioritySolver::getTaxistObjectiveValue() const {
     return this->_taxist_objective_value;
 }
 
-TaxiAssignmentSolution PrioritySolver::getSolution() const {
+TaxiAssignmentSolution TaxiPrioritySolver::getSolution() const {
     return this->_solution;
 }
 
-int PrioritySolver::getSolutionStatus() const {
+int TaxiPrioritySolver::getSolutionStatus() const {
     return this->_solution_status;
 }
 
-double PrioritySolver::getSolutionTime() const {
+double TaxiPrioritySolver::getSolutionTime() const {
     return this->_solution_time;
 }

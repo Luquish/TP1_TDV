@@ -22,8 +22,7 @@ class GreedySolver
         int getSolutionStatus() const;
         double getSolutionTime() const;
         
-        
-	
+
 	private:
         // Instance, problem and results attributes
         TaxiAssignmentInstance _instance;

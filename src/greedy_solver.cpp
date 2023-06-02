@@ -13,7 +13,8 @@ GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
     /*
     *   Crea una instancia de la clase GreedySolver para resolver la instancia dada.
     *   La resolución corresponde con la estrategia FCFS:
-    *       - En orden ascendente de pasajeros, a cada pasajero asignarle el taxi mas cercano que no haya sido asignado a otro pasajero
+    *       - En orden ascendente de pasajeros, 
+    *       - a cada pasajero asignarle el taxi mas cercano que no haya sido asignado a otro pasajero
     */
 
     this->_instance = instance;

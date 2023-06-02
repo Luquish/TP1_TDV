@@ -1,5 +1,5 @@
-#ifndef PRIORITY_SOLVER_H
-#define PRIORITY_SOLVER_H
+#ifndef TAXI_PRIORITY_SOLVER_H
+#define TAXI_PRIORITY_SOLVER_H
 
 #include <cstdint>
 #include <vector>
@@ -9,11 +9,11 @@
 #include "ortools/graph/min_cost_flow.h"
 
 
-class PrioritySolver
+class TaxiPrioritySolver
 {
 	public:
-        PrioritySolver();
-        PrioritySolver(TaxiAssignmentInstance &instance);
+        TaxiPrioritySolver();
+        TaxiPrioritySolver(TaxiAssignmentInstance &instance);
 
         void setInstance(TaxiAssignmentInstance &instance);
         void solve();
