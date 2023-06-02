@@ -23,6 +23,14 @@ bool approximatelyEqual(float a, float b, float epsilon)
 }
 
 void single_check(std::string filename) {
+    /*
+    *   Corre el greedy solver, el batching solver y el taxi priority solver
+    *   Para el archivo input/filename
+    *   Utiliza un TaxiAssignmentChecker para verificar las soluciones.
+    *   Si los costos calculados internos a cada solver no son iguales a los calculados por el checker, sale del programa.
+    *   Imprime los resultados en la consola.
+    */
+
 
     TaxiAssignmentInstance instance(filename);
     std::cout << filename << std::endl;
@@ -106,7 +114,7 @@ void original_check(int n = 10, int sizes_n = 0, bool log = false){
     /*
     *   Corre el greedy solver, el batching solver y el taxi priority solver
     *   Para los archivos de input/small_i.csv, input/medium_i.csv, input/large_i.csv, input/xl_i.csv
-    *   Opctionalmente se puede especificar el numero de archivos a correr con n
+    *   Opcionalmente se puede especificar el numero de archivos a correr con n
     *   y el numero de tamaños de archivos a correr con sizes_n: 1 para small, 2 para small y medium, etc.
     *   Si sizes_n = 0, se corren todos los tamaños.
     * 
@@ -339,7 +347,7 @@ void random_check(std::string path){
 
 void write_solution_csv(std::string filename, TaxiAssignmentSolution &solution, TaxiAssignmentInstance &instance){
     /*
-    *   Escribe la solucion en un archivo csv con el formato:
+    *   Escribe la solución en un archivo csv con el formato:
     *   taxi_id,pax_id,dist
     *   donde taxi_id es el id del taxi, pax_id es el id del pasajero asignado al taxi y dist es la distancia entre el taxi y el pasajero.
     */
@@ -360,10 +368,10 @@ void write_solution_csv(std::string filename, TaxiAssignmentSolution &solution, 
 
 int main(int argc, char** argv) {
     
-    // Evaluacion de soluciones
+    // Evaluar soluciones de greedy, batching y priority
 
     if (argc >= 2 && std::string(argv[1]) == "-b"){
-        // Evaluar soluciones de greedy, batching y priority en las 40 instancias de input/small
+        // En las 40 instancias de input/small
         std::cout << "Batch check" << std::endl;
 
         if (argc == 3 && std::string(argv[2]) == "-l")
@@ -372,7 +380,7 @@ int main(int argc, char** argv) {
             original_check(10, 4, false);
     }
     else if (argc == 3 && std::string(argv[1]) == "-s"){
-        // Evaluar soluciones de greedy, batching y priority en un sola instancia
+        // En un sola instancia
         
         std::cout << "Single check" << std::endl;
         
@@ -380,7 +388,7 @@ int main(int argc, char** argv) {
 
     }
     else if (argc == 3 && std::string(argv[1]) == "-f"){
-        // Evaluar soluciones de greedy, batching y priority en las 5000 instancias de input/fake_instances
+        // En las 5000 instancias de input/fake_instances
         
         std::cout << "Large check" << std::endl;
 
@@ -388,6 +396,7 @@ int main(int argc, char** argv) {
     }
     else{
         // Mostrar opciones
+
         std::cout << "Options: " << std::endl;
         std::cout << "    -b : Evaluar greedy, batching y priority en las 40 instancias de input/small" << std::endl;
         std::cout << "    -b -l : Evaluar greedy, batching y priority en las 40 instancias de input/small y loguear" << std::endl;
