@@ -49,9 +49,26 @@ Para la experimentación se utilizó el Jupiter Notebook `src/scripts/experiment
 
 ### Resultados
 
-Los resultados de la experimentación estan detallados en el Informe `Informe.pdf`.
+Los resultados de la experimentación están detallados en el Informe `Informe.pdf`.
 
 ### Ejecución
 
 Para ejecutar el programa, se debe compilar utilizando `make` y luego ejecutar el binario generado `taxi_batching`.
-Ademas, se debe instalar la libreria Google `OR-TOOLS` y actualizar el path en el Makefile.
+Ademas, se debe instalar la librería Google `OR-TOOLS` y actualizar el path en el Makefile.
+
+### Estructura del proyecto
+
+- `src/`: código fuente del proyecto.
+- `src/scripts/`: scripts de experimentación.
+
+- `input/`: instancias de prueba.
+- `input/fake_instances/`: instancias generadas para experimentación.
+
+- `output/`: soluciones de las instancias de prueba.
+- `output/fake/`: soluciones de las instancias generadas para experimentación.
+- `output/figures/`: gráficos de experimentación.
+
+- `informe/`: informe del proyecto.
+- `informe/imgs/`: imágenes del informe.
+- `informe/informe.rmd`: código fuente del informe.
+- `informe/TP1_Mazarello_Pardo.pdf`: informe final.
