@@ -84,7 +84,6 @@ void BatchingSolver::solve() {
     }
 
     auto end = std::chrono::steady_clock::now();
-    //this->_solution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
 }
 
@@ -107,7 +106,7 @@ void BatchingSolver::_createMinCostFlowNetwork() {
     * Rellenar start_nodes, end_nodes y unit_costs
     * Los vertices de la red se indexan de 0 a 2n-1
     * Los primeros n son los taxis [0, n-1]
-    * Los ultimos n son los pasajeros [n, 2n-1]
+    * Los últimos n son los pasajeros [n, 2n-1]
     * Ademas, los costos entre taxis y pasajeros son 10 * distancia(taxi, pasajero)
     * 10 es un factor de escala para que los costos sean enteros y no decimales.
     */
@@ -115,7 +114,6 @@ void BatchingSolver::_createMinCostFlowNetwork() {
     int cnt = 0;
     for (int taxi = 0; taxi < this->_instance.n; taxi++) {
         for (int j = this->_instance.n; j < 2*this->_instance.n; j++) {
-            // capacities are always 1, defined when initialized.
             int pax = j - n;
             start_nodes[cnt] = taxi;
             end_nodes[cnt] = j;
@@ -125,7 +123,6 @@ void BatchingSolver::_createMinCostFlowNetwork() {
     }
 
     // Los supplies son 1 para los taxis y -1 para los pasajeros
-    // 
     std::vector<int64_t> supplies(2*n, 0);
     for (int i = 0; i < this->_instance.n; i++) {
         supplies[i] = 1;
@@ -190,6 +187,5 @@ El método Solve() devuelve un status que indica si la solución es óptima o no
 Si la solución es óptima, se recorren todos los arcos de la red de flujo de costo mínimo y se agregan a la solución los arcos que tienen flujo mayor a 0.
 
 El costo de la solución se calcula sumando los costos de los arcos de la solución.
-
 
 */

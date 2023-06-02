@@ -42,7 +42,6 @@ void TaxiPrioritySolver::solve() {
     */
 
     // Si no existe la instancia, no se puede resolver
-    
     if (!this->_is_instance_set) {
         this->_solution_status = 0;
         return;
@@ -89,7 +88,6 @@ void TaxiPrioritySolver::solve() {
     }
 
     auto end = std::chrono::steady_clock::now();
-    //this->_solution_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
 }
 
@@ -111,7 +109,7 @@ void TaxiPrioritySolver::_createMinCostFlowNetwork() {
     * Rellenar start_nodes, end_nodes y unit_costs
     * Los vertices de la red se indexan de 0 a 2n-1
     * Los primeros n son los taxis [0, n-1]
-    * Los ultimos n son los pasajeros [n, 2n-1]
+    * Los últimos n son los pasajeros [n, 2n-1]
     * Ademas, los costos entre taxis y pasajeros son 10 * distancia(taxi, pasajero)
     * 10 es un factor de escala para que los costos sean enteros y no decimales.
     */
@@ -119,7 +117,6 @@ void TaxiPrioritySolver::_createMinCostFlowNetwork() {
     int cnt = 0;
     for (int taxi = 0; taxi < this->_instance.n; taxi++) {
         for (int j = this->_instance.n; j < 2*this->_instance.n; j++) {
-            // capacities are always 1, defined when initialized.
             int pax = j - n;
             start_nodes[cnt] = taxi;
             end_nodes[cnt] = j;
@@ -129,11 +126,10 @@ void TaxiPrioritySolver::_createMinCostFlowNetwork() {
 
 
             if (trip_dist == 0) {
-                // Make it very expensive
+                // Vuelve el costo infinito para que no se priorice este arco.
                 unit_costs[cnt] = std::numeric_limits<int>::max();
             }
             else {
-                //unit_costs[cnt] = 100 * (trip_dist / search_dist);
                 unit_costs[cnt] = 100 * (search_dist / trip_dist);
             }
     
@@ -188,3 +184,27 @@ int TaxiPrioritySolver::getSolutionStatus() const {
 double TaxiPrioritySolver::getSolutionTime() const {
     return this->_solution_time;
 }
+
+
+// -----------------------------
+
+/* 
+
+Explicación de TaxiPrioritySolver
+
+TaxiPrioritySolver es una clase que resuelve el problema de asignación de taxis en función de la proporción entre el costo de búsqueda de los taxis y el costo de viaje de los pasajeros.
+
+Para ello, utiliza la clase MinCostFlow de OR-Tools, que resuelve el problema de flujo de costo mínimo.
+
+La red de flujo de costo mínimo se crea en la función _createMinCostFlowNetwork, que utiliza la instancia guardada en _instance.
+
+La red de flujo de costo mínimo tiene 2n nodos y n^2 arcos, donde n es la cantidad de taxis y pasajeros.
+
+El costo de cada arco es 100 * distancia(taxi, pasajero) / distancia(viaje_pasajero).
+Si la distancia del viaje del pasajero es 0, el costo del arco es infinito, para que el pasajero no sea priorizado.
+
+Los supplies de los nodos son 1 para los taxis y -1 para los pasajeros.
+
+La solución del problema de flujo de costo mínimo es una asignación de taxis a pasajeros.
+
+*/

@@ -1,16 +1,17 @@
 #include "checker.h"
+#include <limits>
 
 TaxiAssignmentChecker::TaxiAssignmentChecker() :_feasibility_status(std::vector<bool>(3,false)) {}
 
 bool TaxiAssignmentChecker::checkFeasibility(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution) {
     /*
-    *   Devuelve true si la solucion es factible, false en caso contrario
-    *   La solucion es factible si cumple con las siguientes restricciones:
-    *      - Todos los valores de la solucion estan en el rango [0,n], donde n es la cantidad de taxis/pasajeros
-    *      - Cada pasajero es asignado a un unico taxi
-    *      - Cada taxi es asignado a un unico pasajero
+    *   Devuelve true si la solución es factible, false en caso contrario
+    *   La solución es factible si cumple con las siguientes restricciones:
+    *      - Todos los valores de la solución están en el rango [0,n], donde n es la cantidad de taxis/pasajeros
+    *      - Cada pasajero es asignado a un único taxi
+    *      - Cada taxi es asignado a un único pasajero
     *      - Todos los taxis/pasajeros son asignados
-    *    En caso de que la solucion no sea factible, se guarda en _feasibility_status el estado de cada restriccion
+    *    En caso de que la solución no sea factible, se guarda en _feasibility_status el estado de cada restricción
     */
 
     bool ret = true;
@@ -36,9 +37,9 @@ bool TaxiAssignmentChecker::checkFeasibility(const TaxiAssignmentInstance &insta
 
 double TaxiAssignmentChecker::getSolutionCost(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution) {
     /*
-    *   Devuelve el costo de la solucion. (suma de las distancias de cada taxi a su pasajero asignado)
-    *   Si la solucion no es factible, devuelve -1.0
-    *   Si la solucion es factible, devuelve el costo de la solucion
+    *   Devuelve el costo de la solución. (suma de las distancias de cada taxi a su pasajero asignado)
+    *   Si la solución no es factible, devuelve -1.0
+    *   Si la solución es factible, devuelve el costo de la solución
     */
     
     double ret = 0.0;
@@ -60,14 +61,16 @@ double TaxiAssignmentChecker::getSolutionCost(const TaxiAssignmentInstance &inst
 
 double TaxiAssignmentChecker::getMeanTaxiPriorities(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution){
     /*
-    *  Dadas una solucion para una instancia de TaxiAssignment, calcula el promedio del costo de prioridad de los taxis.
-    *  El Costo Unitario es la razon entre la distancia entre un taxista y su pasajero y la distancia del viaje del pasajero.
-    *  El Costo se multiplica por 100 para trabajar con enteros, pero sin perder presición.
+    *  Dadas una solución para una instancia de TaxiAssignment, calcula el promedio del costo de prioridad de los taxis.
+    *  El Costo Unitario es la razón entre la distancia entre un taxista y su pasajero y la distancia del viaje del pasajero.
+    *  El Costo se multiplica por 100 para trabajar con enteros, pero sin perder precisión.
     *  Ademas permite tratar al costo unitario o ratio como un porcentaje.
     *  El Costo de Taxistas es la suma de los Costos Unitarios de cada asignación.
+    *  Cuando el viaje del pasajero es de 0, el Costo Unitario de la asignación no se considera para el Costo de Taxistas total.
+    *  A la hora de comparar este costo a través de las soluciones, todos las soluciones van a haber tenido los mismos pasajeros con los mismos viajes.
     */
     
-    double avg_taxicost_ratio = 0;
+    double avg_taxi_cost_ratio = 0;
 
     for (int taxi = 0; taxi < instance.n; taxi++){
 
@@ -83,16 +86,16 @@ double TaxiAssignmentChecker::getMeanTaxiPriorities(const TaxiAssignmentInstance
             ratio = 100 * (search_dist / trip_dist);
         }
         
-        avg_taxicost_ratio += ratio / instance.n;
+        avg_taxi_cost_ratio += ratio / instance.n;
     }
 
-    return avg_taxicost_ratio;
+    return avg_taxi_cost_ratio;
 }
 
 bool TaxiAssignmentChecker::_checkValuesInRange(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution){
     /*
-    *   Devuelve true si todos los valores de la solucion estan en rango (0 <= taxi < n y 0 <= pax < n)
-    *   Devuelve false si algun valor esta fuera de rango
+    *   Devuelve true si todos los valores de la solución están en rango (0 <= taxi < n y 0 <= pax < n)
+    *   Devuelve false si algún valor esta fuera de rango
     */
 
     bool ret = true;
@@ -128,7 +131,7 @@ bool TaxiAssignmentChecker::_checkValuesInRange(const TaxiAssignmentInstance &in
 
 bool TaxiAssignmentChecker::_checkPaxUnique(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution){
     /*
-    *   Devuelve true si todos los pasajeros estan asignados a un solo taxi
+    *   Devuelve true si todos los pasajeros están asignados a un solo taxi
     *   Devuelve false si algun pasajero no esta asignado o esta asignado a mas de un taxi
     */
 
@@ -170,7 +173,7 @@ bool TaxiAssignmentChecker::_checkPaxUnique(const TaxiAssignmentInstance &instan
 bool TaxiAssignmentChecker::_checkTaxiUnique(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution){
     /*
     *   Devuelve true si todos los taxis tienen un solo pasajero asignado
-    *   Devuelve false si algun taxi no tiene pasajero asignado o si mas de un pasajero estan asignados al mismo taxi
+    *   Devuelve false si algún taxi no tiene pasajero asignado o si mas de un pasajero están asignados al mismo taxi
     */
 
     bool ret = true;

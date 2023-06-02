@@ -380,7 +380,7 @@ Como la cuestión a resolver es minimizar el costo total de asignar los Taxis a 
 
 El costo unitario de asignar el Taxi al Pasajero es $\frac{\text{Distance}(t_i, p_i)}{\text{Distance}(p_i)} = \frac{10}{20} = 0.5$. 
 
-A modo de implementación, optamos por multiplicar el costo unitario por 100, para poder trabajar con números enteros, pero a su vez, mantener cierta precisión al estar hablando de un ratio de distancias. De esta forma, el costo unitario queda definido como:
+A modo de implementación, optamos por multiplicar el costo unitario por 100, para poder trabajar con números enteros, pero a su vez, mantener cierta precisión al estar hablando de un ratio de distancias. En el caso de que el pasajero realize un viaje de distancia = $0$, el costo del arco pasa a valer $\infty$. La librería `limits` de `C++` incluye una definición para un `INT_MAX`: `numeric_limits<int>::max()`, tal que `INT_MAX` $> i \forall i \in Z$. De esta forma, el costo unitario queda definido como:
 
 $$
 \text{TaxiPriority Cost}(t_i, p_j) = \lfloor 100 * \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \rfloor \quad \forall t_i \in T, p_j \in P
@@ -407,6 +407,8 @@ En la experimentación se plantearon las siguientes cuestiones a comparar a trav
 - Los costos objetivos de las soluciones obtenidas por cada modelo. (Batching Cost)
 - La nueva métrica de Costo de Taxistas. (TaxiPriority Cost)
 - Los tiempos de ejecución de cada modelo.
+
+Al momento de calcular el Costo de Taxistas promedio, aquellos costos que en la implementación fueron definidos como `INT_MAX` fueron descartados ya que, como dependen de las distancias de viajes de los pasajeros por estar dados por las instancias y no por las soluciónes generadas, no aportan información distinctiva a los promedio de los costos a traves de los tipos de soluciones.
 
 ### Comparación de soluciones en Instancias Originales
 

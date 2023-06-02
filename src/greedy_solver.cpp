@@ -42,24 +42,23 @@ void GreedySolver::setInstance(TaxiAssignmentInstance &instance) {
 
 void GreedySolver::solve() {
     /*
-    *   Resuelve la instancia recibida por parametro al constructor de forma greedy.
-    *   Guarda la solucion en el atributo _solution.
+    *   Resuelve la instancia recibida por parámetro al constructor de forma greedy.
+    *   Guarda la solución en el atributo _solution.
     */
     
     // this->_instance, es la instancia de tipo TaxiAssignmentInstance
     // Al pasajero 0 le asigno el taxi mas cercano
     // Al pasajero 1 le asigno el taxi mas cercano de los restantes
+    // ...
+
 
     // Si no existe la instancia, no se puede resolver
-    
     if (!this->_is_instance_set) {
         this->_solution_status = 0;
         return;
     }
 
     // Time solution
-    //std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-
     auto start = std::chrono::steady_clock::now();
     
     this->_solution = TaxiAssignmentSolution(this->_instance.n);
@@ -95,18 +94,14 @@ void GreedySolver::solve() {
         this->_solution.assign(min_tax, p);
 
         // El valor objetivo tiene en cuenta la distancia recorrida por el taxi para ir a buscar al pasajero
-        // Esta operación se podría hacer despues de asignar todos los pasajeros, y luego de timear el algoritmo
-        this->_objective_value += this->_instance.dist[min_tax][p];//* fare_per_km;
+        // Esta operación se podría hacer después de asignar todos los pasajeros, y luego de timear el algoritmo
+        this->_objective_value += this->_instance.dist[min_tax][p];
 
-        // Solution Status
-        //TaxiAssignmentChecker checker = TaxiAssignmentChecker();
-        
-        //this->_solution_status = checker.checkFeasibility(this->_instance, this->_solution) ? 2 : 3;
+        // Solution Status        
         this->_solution_status = 2;
     }
 
     // Time solution
-    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     auto end = std::chrono::steady_clock::now();
     this->_solution_time = std::chrono::duration<double, std::milli>(end - start).count();
 
@@ -136,3 +131,20 @@ int GreedySolver::getSolutionStatus() const {
 double GreedySolver::getSolutionTime() const {
     return this->_solution_time;
 }
+
+// -----------------------------
+
+/* 
+
+Explicación de GreedySolver
+
+Algoritmo Greedy para resolver el problema de asignación de taxis a pasajeros.
+
+El algoritmo consiste en asignar a cada pasajero el taxi más cercano que no haya sido asignado a otro pasajero.
+
+* Se recorre la matriz de distancias entre taxis y pasajeros
+* Para cada pasajero se busca el taxi más cercano que no haya sido asignado a otro pasajero
+* Cuando se encuentra un taxi disponible, se lo asigna al pasajero
+* Si no existe un taxi disponible, se marca la solución como UNBALANCED
+
+*/
