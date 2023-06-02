@@ -2,6 +2,7 @@
 
 ## Diseño de Algoritmos - Licenciatura en Tecnología Digital - UTDT
 
+[Link al repo: https://github.com/Luquish/TP1_TDV](https://github.com/Luquish/TP1_TDV)
 
 ### Integrantes del grupo
 
