@@ -1,27 +1,24 @@
 ---
-title: "Trabajo Práctico: Taxi Matching"
+title: "Servicios de movilidad on-demand en tiempo real"
 subtitle: "Diseño de Algoritmos - Licenciatura en Tecnología Digital - UTDT"
 author:
 - Luca Mazzarello^[lmazzarello@mail.utdt.edu]
 - Ignacio Pardo^[ipardo@mail.utdt.edu]
 date: "`r Sys.Date()`"
 abstract: |
-    El problema consiste en asignar taxis a pasajeros de manera de minimizar las distancias recorridas por los taxis globales.
-    Este trabajo presenta dos algoritmos para el problema de asignación de taxis. El objetivo de este informe es el de detallar los algoritmos y compararlos en términos de performance y calidad de solución.
+    El problema a investigar consiste en la asignación de vechiculos disponibles a pasajeros que demanden de un viaje.
+    Este trabajo presenta tres algoritmos con distintos enfoques para el problema de asignación de taxis. 
+    Una heuristica goloza que priorice los pasajeros por orden de llegada, un algoritmo que minimice las distancias recorridas por los taxis globales y un algoritmo que minimice los viajes menos rentables para los taxistas. El objetivo de este informe es el de detallar los algoritmos y compararlos en términos de performance y calidad de solución.
 output:
   pdf_document:
-    #toc: yes
+    toc: yes
     #toc_depth: 2
     number_sections: yes
     fig_caption: yes
 ---
-
-<br>
-<br>
-<br>
-
 ![](imgs/utdt_taxi.png)
 
+<!--
 \newpage
 
 ## Tabla de contenidos
@@ -53,6 +50,8 @@ output:
         3. [Comparación de tiempos de ejecución entre TaxiPrioritySolver y Batching Matching en Instancias Aleatorias](#comparación-de-tiempos-de-ejecución-entre-taxiprioritysolver-y-batching-matching-en-instancias-aleatorias)
 5. [Conclusiones](#conclusiones)
 6. [Referencias](#referencias)
+-->
+
 
 \newpage
 
@@ -170,9 +169,7 @@ Para la estrategia de batching, se plantea una red de flujo de costo mínimo, do
 
 \newpage
 
-El grafo resultante $G$ tiene la siguiente estructura $G = (V, E)$
-
-Donde $V$ es el conjunto de nodos y $E$ es el conjunto de aristas. 
+El grafo resultante es $G = (V, E)$ donde $V$ es el conjunto de nodos y $E$ es el conjunto de aristas. 
 
 Los nodos se dividen en 3 conjuntos:
 
@@ -213,7 +210,13 @@ Primero, se obtiene el número de taxis y pasajeros de la instancia guardada en 
 
 El siguiente paso es llenar los vectores start_nodes, end_nodes y unit_costs con la información necesaria para crear los arcos de la red. Los vértices de la red se indexan de $0$ a $2n-1$, donde los primeros n representan a los taxis y los últimos n representan a los pasajeros.
 
-Se recorren todos los taxis y pasajeros y se establecen las conexiones entre ellos. Cada conexión representa un arco en la red de flujo de costo mínimo. Los arcos tienen una capacidad de $1 $(ya que cada taxi solo puede atender a un pasajero) y un costo unitario que se calcula como $10$ veces la distancia entre el taxi y el pasajero. El factor de escala de 10 se utiliza para que los costos sean enteros y no de tipo `double`.
+Se recorren todos los taxis y pasajeros y se establecen las conexiones entre ellos. Cada conexión representa un arco en la red de flujo de costo mínimo. Los arcos tienen una capacidad de $1$ (ya que cada taxi solo puede atender a un pasajero) y un costo unitario que se calcula como $10$ veces la distancia entre el taxi y el pasajero. El factor de escala de 10 se utiliza para que los costos sean enteros y no de tipo `double`.
+
+$$
+\begin{aligned}
+\text{UnitCost}(t_i, p_j) &= \lfloor 10 \times \text{Distance}(t_i, p_j) \rfloor \quad \forall t_i \in T, p_j \in P \\
+\end{aligned}
+$$
 
 Después de llenar los vectores con la información de los arcos, se crea la red de flujo de costo mínimo en el atributo `_min_cost_flow` utilizando el objeto `MinCostFlow`. Se agrega cada arco a la red utilizando el método `AddArcWithCapacityAndUnitCost()`.
 
@@ -241,7 +244,7 @@ La forma en la que se utilizó `chrono` es la siguiente:
 
 Para implementar el modelo de batching, se utilizó la librería [`OR-TOOLS`](https://developers.google.com/optimization/). Esta librería permite resolver problemas de optimización combinatoria, como el problema de flujo de costo mínimo. Para resolver el problema de Batching se utilizo la clase `MinCostFlow` de la librería. Esta clase representa un grafo de flujo de costo mínimo. Para crear la red de flujo de costo mínimo, se utilizó el método `AddArcWithCapacityAndUnitCost()` de la clase `MinCostFlow`. Este método se encarga de agregar un arco a la red de flujo de costo mínimo. El método `Solve()` de la clase `MinCostFlow` se encarga de resolver el problema de flujo de costo mínimo.
 
-# Comparación de resultados
+# Resultados
 
 ## Obtención de resultados 
 
@@ -249,7 +252,7 @@ Para obtener los resultados, se corrieron los dos algoritmos para cada instancia
 
 La siguiente tabla detalla un resumen de los resultados obtenidos:
 
-|       |       n |   greedy_cost |   min_cost_flow_cost |   greedy_time |   min_cost_flow_time |
+|       |       n |   greedy_cost |   batching_cost      |   greedy_time |   batching_time      |
 |:------|--------:|--------------:|---------------------:|--------------:|---------------------:|
 | count |  40     |        40     |               40     |     40        |              40      |
 | mean  | 215     |       696.783 |              587.278 |      0.442864 |              23.525  |
@@ -268,12 +271,12 @@ A simple vista podemos ver que la media del valor objetivo de la solución obten
 
 ### Distancia total recorrida 
 
-Para comparar los resultados obtenidos por los algoritmos, se utiliza el valor objetivo de la solución. En cada caso, se mide la mejora porcentual obtenida. Sean $z_b$ y $z_g$ el valor de la función objetivo de una solución del modelo para el batching y el de FCFS, respectivamente. Definimos la mejora relativa y aplicamos la formula a los resultados obtenidos:
+Para comparar los resultados obtenidos por los algoritmos, se utiliza el valor objetivo de la solución. En cada caso, se mide la mejora porcentual obtenida. Sean $z_b$ y $z_g$ el valor de la función objetivo de una solución del modelo para el batching y el de FCFS, respectivamente. Definimos la mejora relativa y aplicamos la formula a los valores medidos:
 $$
     \%\text{gap}= \frac{z_g - z_b}{z_b}
 $$
 
-|   n |   greedy_cost |   min_cost_flow_cost |      gap |
+|   n |   greedy_cost |        batching_cost |      gap |
 |----:|--------------:|---------------------:|---------:|
 |  10 |         46.93 |                40.06 | 0.177322 |
 | 100 |        337.31 |               280.63 | 0.205883 |
@@ -343,7 +346,10 @@ Al Scatter Plot lo acompaña una regresión logarítmica a partir de la media de
 
 La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteración se debe calcular la distancia entre cada par de pasajeros. La complejidad del algoritmo de batching es $O(n^2*m*log(n*C))$ por la complejidad de resolver el flujo máximo de costo minimo que esta descripta en la [documentación de la clase `MinCostFlow` de `OR-TOOLS`](https://developers.google.com/optimization/reference/graph/min_cost_flow) a partir del algoritmo propuesto en "Finding Minimum-Cost Circulations by Successive Approximation" de Goldberg y Tarjan.
 
-![Tiempo de Ejecución - Greedy vs Batching](../src/output/figures/greedy_vs_batching_time.png)
+
+![Tiempo de Ejecución - Greedy vs Batching - Instancias Originales](../src/output/figures/greedy_vs_batching_time.png)
+
+![Tiempo de Ejecución - Greedy vs Batching - Instancias Aleatorias](../src/output/figures/greedy_vs_batching_time_fake.png)
 
 De modo empírico, se observó que el algoritmo greedy es mucho más rápido que el algoritmo de batching. Obtenemos para el dominio $n = 1, \dots ,500$, la imagen del tiempo de ejecución del algoritmo greedy esta entre $0.001$ y $2.66279$ milisegundos, mientras que la imagen del tiempo de ejecución del algoritmo de batching esta entre $0.0$ y $151.0$ milisegundos. En el gráfico el tiempo de ejecución es el del promedio de las 10 ejecuciones de cada algoritmo para cada cantidad de pasajeros, las imagenes para estos resultados se encuentran entre $0$ y ~$1$ ms para el algoritmo greedy y entre $0$ y ~$70$ ms para el algoritmo de batching.
 
@@ -374,10 +380,18 @@ El costo unitario de asignar el Taxi al Pasajero es $\frac{\text{Distance}(t_i, 
 A modo de implementacíon, optamos por multiplicar el costo unitario por 100, para poder trabajar con números enteros, pero a su vez, mantener cierta precisión al estar hablando de un ratio de distancias. De esta forma, el costo unitario queda definido como:
 
 $$
-\text{Taxi Cost}(t_i, p_j) = 100 * \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \quad \forall t_i \in T, p_j \in P
+\text{TaxiPriority Cost}(t_i, p_j) = \lfloor 100 * \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \rfloor \quad \forall t_i \in T, p_j \in P
 $$
 
 La relación entre la distancia del Taxi al Pasajero y el costo unitario es directamente proporcional, es decir que a mayor distancia, mayor costo unitario. Por otro lado, la relación entre la distancia del viaje del Pasajero y el costo unitario es inversamente proporcional, es decir que a mayor distancia, menor costo unitario. De esta forma, buscamos minimizar el costo unitario, es decir que se priorizan los Taxis más cercanos a los Pasajeros que tienen viajes más largos. Llamemos entonces al total de costos unitarios de asignar los Taxis a los Pasajeros para una solución como "Costo de Taxistas".
+
+Un detalle a tener en cuenta es que la función de costo unitario del modelo de `Batching` es directamente proporcional con la función de costo unitario de `TaxiPriority` ya que ambas dependen directamente de la distancia entre el Taxi y el Pasajero de la siguiente forma:
+
+$$
+\begin{aligned}
+\text{Batching UnitCost}(t_i, p_j) &= \lfloor 10 \times \text{Distance}(t_i, p_j) \rfloor \quad \forall t_i \in T, p_j \in P \\
+\end{aligned}
+$$
 
 Este problema lo podemos modelar nuevamente como un problema de flujo de costo mínimo, donde los nodos son los Taxis, los Pasajeros y el nodo fuente y sumidero. Las aristas son las conexiones entre los Taxis y los Pasajeros, pero en este caso el costo de cada arista es el nuevo costo unitario de asignar el Taxi al Pasajero. La capacidad de cada arista es 1, ya que cada Taxi solo puede ser asignado a un Pasajero.
 
@@ -387,26 +401,19 @@ Este problema lo podemos modelar nuevamente como un problema de flujo de costo m
 
 En la experimentación se plantearon las siguientes cuestiones a comparar a través de los modelos.
 
-- Los costos objetivos de las soluciones obtenidas por cada modelo.
-- La nueva metrica de Costo de Taxistas.
+- Los costos objetivos de las soluciones obtenidas por cada modelo. (Batching Cost)
+- La nueva metrica de Costo de Taxistas. (TaxiPriority Cost)
 - Los tiempos de ejecución de cada modelo.
 
 ### Comparación de soluciones en Instancias Originales
 
 Inicialmente evaluamos los tres modelos en las instancias originales.
 
-![Priority vs Batching vs Greedy - Instancias Originales](../src/output/figures/results_combined_original.png)
+![TaxiPriority vs Batching vs Greedy - Instancias Originales](../src/output/figures/results_combined_original.png)
 
-Como la función de costo unitario del modelo de `Batching` es directamente proporcional con la función de costo unitario de `TaxiPriority` ya que ambas dependen directamente de la distancia entre el Taxi y el Pasajero de la siguiente forma:
+![Desgloze Valor Objetivo - TaxiPriority vs Batching vs Greedy - Instancias Originales](../src/output/figures/solutions_original_boxplots.png)
 
-$$
-\begin{aligned}
-\text{Batching UnitCost}(t_i, p_j) &= 10 \times \text{Distance}(t_i, p_j) \quad \forall t_i \in T, p_j \in P \\
-\text{Priority UnitCost}(t_i, p_j) &= 100 \times \frac{\text{Distance}(t_i, p_j)}{\text{Distance}(p_j)} \quad \forall t_i \in T, p_j \in P
-\end{aligned}
-$$
-
-Los resultados nos muestran como el modelo de `TaxiPriority` obtiene soluciones con un costo objetivo cercano, aunque mayor, al modelo de `Batching` pero de todas formas menor que el modelo `Greedy`. Como la resolución por `Batching` resulta en la asignación óptima, es esperado que su función de valor objetivo actúe de cota inferior para los otros modelos.
+Los resultados nos muestran como el modelo de `TaxiPriority` obtiene soluciones con un costo objetivo cercano, aunque mayor, al modelo de `Batching` pero de todas formas menor que el modelo `Greedy`. Como la resolución por `Batching` resulta en la asignación óptima, es esperado que su función de valor objetivo actúe de cota inferior para los otros modelos. Además, por la comparación hecha en la sección anterior entre la función de costo unitario de `TaxiPriority` y `Batching`, es esperado que el costo objetivo de `TaxiPriority` sea aunque mayor, similar al de `Batching`.
 
 \newpage
 
@@ -414,21 +421,21 @@ Los resultados nos muestran como el modelo de `TaxiPriority` obtiene soluciones 
 
 Al igual que en la experimentación de `Batching`, se utilizaron las mismas $\sim5000$ instancias generadas de forma aleatoria para comparar ahora con el nuevo modelo `TaxiPriority`.
 
-![Valor Objetivo - Priority vs Batching vs Greedy - Instancias Aleatorias](../src/output/figures/solutions_random.png)
-![Costo de Taxistas - Priority vs Batching vs Greedy  - Instancias Aleatorias](../src/output/figures/taxi_priorities_random_grouped.png)
+![Valor Objetivo - TaxiPriority vs Batching vs Greedy - Instancias Aleatorias](../src/output/figures/solutions_random.png)
+![Costo de Taxistas - TaxiPriority vs Batching vs Greedy  - Instancias Aleatorias](../src/output/figures/taxi_priorities_random_grouped.png)
 
 Podemos observar el mismo comportamiento que aquel de las instancias originales, donde el modelo `TaxiPriority` obtiene soluciones con un costo objetivo cercano al modelo de `Batching` y menor que el modelo `Greedy`.
 
 Como nuestro nuevo modelo resulta de una red de flujo máximo de costo minimo de la misma cantidad de nodos y arcos que el modelo de Batching, sus complejidades algoritmicas son iguales.
 
-![Mejora Relativa - Priority vs Batching - Instancias Aleatorias](../src/output/figures/relative_improvement_priority_vs_min_cost_flow.png)
+![Mejora Relativa - TaxiPriority vs Batching - Instancias Aleatorias](../src/output/figures/relative_improvement_priority_vs_min_cost_flow.png)
 
 \newpage
 
 Luego, observamos la mejora relativa que presenta `Batching` frente al nuevo modelo de `TaxiPriority`.
 La media de la mejora relativa entre `Batching` y `TaxiPriority` tiende a $0.092019$, mientras que la mejora relativa promedio entre `Batching` y `Greedy` para la misma cantidad de taxis/pasajeros tiende a $0.5$.
 
-![Mejora Relativa - Priority vs Batching std - Instancias Aleatorias](../src/output/figures/relative_improvement_priority_vs_min_cost_flow_boxplot.png)
+![Mejora Relativa - TaxiPriority vs Batching std - Instancias Aleatorias](../src/output/figures/relative_improvement_priority_vs_min_cost_flow_boxplot.png)
 
 Ademas podemos ver como la desviación estandar de la mejora relativa entre `Batching` y `TaxiPriority` decrece a medida que aumenta la cantidad de taxis/pasajeros al igual que lo hace la desviación estandar de la mejora relativa entre `Batching` y `Greedy` (esto también se debe atribuir a la naturaleza aleatoria de las instancias).
 
@@ -436,7 +443,7 @@ Ademas podemos ver como la desviación estandar de la mejora relativa entre `Bat
 
 En la experimentación se observan comportamientos analogos en cuanto a tiempos de ejecución entre `TaxiPriority` y `Batching Matching` ya que ambos modelos son eventualmente resueltos por el mismo algoritmo de resolución de flujo máximo de costo mínimo, para la misma cantidad de nodos y arcos, por lo que sus complejidades algoritmicas son iguales.
 
-![Tiempo de Ejecución - Batching vs Priority](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
+![Tiempo de Ejecución - TaxiPriority vs Priority](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
 
 \newpage
 
@@ -444,7 +451,7 @@ En la experimentación se observan comportamientos analogos en cuanto a tiempos 
 
 El objetivo de este trabajo fue el de modelar el problema de asignación de Taxis a Pasajeros como un problema de flujo de costo mínimo, y comparar los resultados obtenidos con los modelos de `Batching` y `Greedy` planteados. Ademas se propuso un nuevo modelo de asignación de Taxis a Pasajeros, llamado `TaxiPriority`, que prioriza los viajes más rentables para los conductores, y se compararon los resultados obtenidos con los otros dos modelos.
 
-Los tres algoritmos generan soluciones distintas para la asignación de viajes, una descripción mas informal de como los algoritmos operan es la siguiente: El algoritmo FCFS (`Greedy`) prioriza los tiempos mas cortos para los pasajeros en orden de llegada, mientras que el modelo de `TaxiPriority` prioriza los viajes más rentables para los conductores. Por último, el modelo de `Batching` prioriza los viajes más rentables para la asignación total.
+Una descripción mas informal para la forma en que los tres algoritmos distintos generan sus soluciones es la siguiente: El algoritmo FCFS (`Greedy`) prioriza los tiempos mas cortos para los pasajeros en orden de llegada, mientras que el modelo de `TaxiPriority` prioriza los viajes más rentables para los conductores. Por último, el modelo de `Batching` prioriza los viajes más rentables para la asignación total.
 
 La curva de la mejora relativa del modelo de `TaxiPriority` tiene un comportamiento similar al del modelo de `Batching` en cuanto el Valor Objetivo resultante para cada instancia comparada contra el algoritmo `Greedy`. Con respecto a la relación entre el algoritmo `Greedy` y el `Batching`, por definición el algoritmo `Greedy` obtiene una solución subóptima, por lo tanto su Valor Objetivo es mayor que el del modelo de `Batching` que optimiza esta métrica. Por lo tanto, la cota inferior de estos Valores Objetivos esta siempre delineada por aquella resuelta por el modelo de `Batching`.
 
