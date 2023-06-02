@@ -7,6 +7,7 @@ GreedySolver::GreedySolver() {
     this->_objective_value = 0;
     this->_solution_status = 0;
     this->_solution_time = 0;
+    this->_is_instance_set = false;
 }
 
 GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
@@ -18,6 +19,8 @@ GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
     */
 
     this->_instance = instance;
+    this->_is_instance_set = true;
+
     this->_objective_value = 0;
     /* 
     *   NOT SOLVED = 0
@@ -34,6 +37,7 @@ GreedySolver::GreedySolver(TaxiAssignmentInstance &instance) {
 
 void GreedySolver::setInstance(TaxiAssignmentInstance &instance) {
     this->_instance = instance;
+    this->_is_instance_set = true;
 }
 
 void GreedySolver::solve() {
@@ -46,8 +50,16 @@ void GreedySolver::solve() {
     // Al pasajero 0 le asigno el taxi mas cercano
     // Al pasajero 1 le asigno el taxi mas cercano de los restantes
 
+    // Si no existe la instancia, no se puede resolver
+    
+    if (!this->_is_instance_set) {
+        this->_solution_status = 0;
+        return;
+    }
+
     // Time solution
     //std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+
     auto start = std::chrono::steady_clock::now();
     
     this->_solution = TaxiAssignmentSolution(this->_instance.n);

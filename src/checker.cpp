@@ -58,6 +58,37 @@ double TaxiAssignmentChecker::getSolutionCost(const TaxiAssignmentInstance &inst
     return ret;
 }
 
+double TaxiAssignmentChecker::getMeanTaxiPriorities(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution){
+    /*
+    *  Dadas una solucion para una instancia de TaxiAssignment, calcula el promedio del costo de prioridad de los taxis.
+    *  El Costo Unitario es la razon entre la distancia entre un taxista y su pasajero y la distancia del viaje del pasajero.
+    *  El Costo se multiplica por 100 para trabajar con enteros, pero sin perder presición.
+    *  Ademas permite tratar al costo unitario o ratio como un porcentaje.
+    *  El Costo de Taxistas es la suma de los Costos Unitarios de cada asignación.
+    */
+    
+    double avg_taxicost_ratio = 0;
+
+    for (int taxi = 0; taxi < instance.n; taxi++){
+
+        int pax = solution.getAssignedPax(taxi);
+        double trip_dist = instance.pax_trip_dist[pax];
+        double search_dist = instance.dist[taxi][pax];
+        
+        double ratio;
+        if (trip_dist == 0){
+            ratio = 0;   
+        }
+        else{
+            ratio = 100 * (search_dist / trip_dist);
+        }
+        
+        avg_taxicost_ratio += ratio / instance.n;
+    }
+
+    return avg_taxicost_ratio;
+}
+
 bool TaxiAssignmentChecker::_checkValuesInRange(const TaxiAssignmentInstance &instance, const TaxiAssignmentSolution &solution){
     /*
     *   Devuelve true si todos los valores de la solucion estan en rango (0 <= taxi < n y 0 <= pax < n)

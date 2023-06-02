@@ -102,66 +102,6 @@ void single_check(std::string filename) {
     std::cout << "Priority Solution Cost: " << priority_cost << std::endl;
 }
 
-void taxi_priority_cost(TaxiAssignmentSolution &taxi_priority_solution, TaxiAssignmentSolution &batching_solution, TaxiAssignmentSolution &greedy_solution, TaxiAssignmentInstance &instance, std::ofstream &log_file, double taxi_priority_solver_taxi_cost){
-    /*
-    *  Dadas las soluciones greedy, batching y priority
-    *  Calcula el Costo de Taxistas de cada una y lo escribe en el archivo de log_file.
-    *  El Costo Unitario es la razon entre la distancia entre un taxista y su pasajero y la distancia del viaje del pasajero.
-    *  El Costo se multiplica por 100 para trabajar con enteros, pero sin perder presición.
-    *  Ademas permite tratar al costo unitario o ratio como un porcentaje.
-    *  El Costo de Taxistas es la suma de los Costos Unitarios de cada asignación.
-    */
-    
-    double avg_priority_ratio = 0;
-    double avg_min_cost_flow_ratio = 0;
-    double avg_greedy_ratio = 0;
-
-    for (int taxi = 0; taxi < instance.n; taxi++){
-    
-        int taxi_priority_pax = taxi_priority_solution.getAssignedPax(taxi);
-        double taxi_priority_trip_dist = instance.pax_trip_dist[taxi_priority_pax];
-        double taxi_priority_search_dist = instance.dist[taxi][taxi_priority_pax];
-        
-        double priority_ratio;
-        if (taxi_priority_trip_dist == 0){
-            priority_ratio = 0;   
-        }
-        else{
-            priority_ratio = 100 * (taxi_priority_search_dist / taxi_priority_trip_dist);
-        }
-
-        int batching_pax = batching_solution.getAssignedPax(taxi);
-        double batching_trip_dist = instance.pax_trip_dist[batching_pax];
-        double batching_search_dist = instance.dist[taxi][batching_pax];
-
-        double batching_ratio;
-        if (batching_trip_dist == 0){
-            batching_ratio = 0;
-        }
-        else{
-            batching_ratio = 100 * (batching_search_dist / batching_trip_dist);
-        }
-
-        int greedy_pax = greedy_solution.getAssignedPax(taxi);
-        double greedy_trip_dist = instance.pax_trip_dist[greedy_pax];
-        double greedy_search_dist = instance.dist[taxi][greedy_pax];
-
-        double greedy_ratio;
-        if (greedy_trip_dist == 0){
-            greedy_ratio = 0;
-        }
-        else{
-            greedy_ratio = 100 * (greedy_search_dist / greedy_trip_dist);
-        }
-        
-        avg_priority_ratio += priority_ratio / instance.n;
-        avg_min_cost_flow_ratio += batching_ratio / instance.n;
-        avg_greedy_ratio += greedy_ratio / instance.n;
-    }
-
-    log_file << instance.n << "," << avg_priority_ratio << "," << avg_min_cost_flow_ratio << "," << avg_greedy_ratio << std::endl;
-}
-
 void original_check(int n = 10, int sizes_n = 0, bool log = false){
     /*
     *   Corre el greedy solver, el batching solver y el taxi priority solver
@@ -266,13 +206,18 @@ void original_check(int n = 10, int sizes_n = 0, bool log = false){
 
             // Taxi Priorities
 
-            taxi_priority_cost(taxi_priority_solution, batching_solution, greedy_solution, instance, taxi_priority_log_file, taxi_priority_solver.getTaxistObjectiveValue());
+
+            double priority_taxicost = checker.getMeanTaxiPriorities(instance, taxi_priority_solution);
+            double batching_taxicost = checker.getMeanTaxiPriorities(instance, batching_solution);
+            double greedy_taxicost = checker.getMeanTaxiPriorities(instance, greedy_solution);
 
 
             // Log
 
-            if (log)
+            if (log){
                 log_file << filename << "," << instance.n << "," << greedy_cost << "," << batching_cost << "," << greedy_solver.getSolutionTime() << "," << batching_solver.getSolutionTime() << "," << priority_cost << "," << taxi_priority_solver.getSolutionTime() << std::endl;
+                taxi_priority_log_file << instance.n << "," << priority_taxicost << "," << batching_taxicost << "," << greedy_taxicost << std::endl;
+            }
         }
     }
 
@@ -379,12 +324,15 @@ void random_check(std::string path){
 
         // Taxi Priorities
 
-        taxi_priority_cost(taxi_priority_solution, batching_solution, greedy_solution, instance, taxi_priority_log_file, taxi_priority_solver.getTaxistObjectiveValue());
+        double priority_taxicost = checker.getMeanTaxiPriorities(instance, taxi_priority_solution);
+        double batching_taxicost = checker.getMeanTaxiPriorities(instance, batching_solution);
+        double greedy_taxicost = checker.getMeanTaxiPriorities(instance, greedy_solution);
 
 
         // Log  
 
         log_file << filename << "," << instance.n << "," << greedy_cost << "," << batching_cost << "," << greedy_solver.getSolutionTime() << "," << batching_solver.getSolutionTime() << "," << priority_cost << "," << taxi_priority_solver.getSolutionTime() << std::endl;
+        taxi_priority_log_file << instance.n << "," << priority_taxicost << "," << batching_taxicost << "," << greedy_taxicost << std::endl;
 
     }
 }

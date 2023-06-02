@@ -30,7 +30,9 @@ class BatchingSolver
 
         // Instance, problem and results attributes
         TaxiAssignmentInstance _instance;
+        bool _is_instance_set;
         TaxiAssignmentSolution _solution;
+        
         double _objective_value;
         int _solution_status;
         double _solution_time;

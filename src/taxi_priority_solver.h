@@ -31,7 +31,9 @@ class TaxiPrioritySolver
 
         // Instance, problem and results attributes
         TaxiAssignmentInstance _instance;
+        bool _is_instance_set;
         TaxiAssignmentSolution _solution;
+        
         double _objective_value;
         double _taxist_objective_value;
         int _solution_status;

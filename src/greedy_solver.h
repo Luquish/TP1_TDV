@@ -26,6 +26,8 @@ class GreedySolver
 	private:
         // Instance, problem and results attributes
         TaxiAssignmentInstance _instance;
+        bool _is_instance_set;
+
         TaxiAssignmentSolution _solution;
         double _objective_value;
         // http://google.github.io/or-tools/python/ortools/graph/pywrapgraph.html#MinCostFlowBase

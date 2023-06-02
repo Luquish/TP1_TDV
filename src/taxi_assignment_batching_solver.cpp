@@ -8,6 +8,8 @@ BatchingSolver::BatchingSolver() {
     this->_objective_value = 0;
     this->_solution_status = 0;
     this->_solution_time = 0;
+
+    this->_is_instance_set = false;
 }
 
 BatchingSolver::BatchingSolver(TaxiAssignmentInstance &instance) {
@@ -16,6 +18,8 @@ BatchingSolver::BatchingSolver(TaxiAssignmentInstance &instance) {
     *   Guarda la instancia en el atributo _instance.
     */
     this->_instance = instance;
+    this->_is_instance_set = true;
+
     this->_objective_value = 0;
     this->_solution_status = 0;
     this->_solution_time = 0;
@@ -26,6 +30,7 @@ void BatchingSolver::setInstance(TaxiAssignmentInstance &instance) {
     *   Guarda la instancia en el atributo _instance.
     */
     this->_instance = instance;
+    this->_is_instance_set = true;
 }
 
 void BatchingSolver::solve() {
@@ -33,6 +38,13 @@ void BatchingSolver::solve() {
     *   Resuelve el problema de asignación de taxis utilizando un grafo de flujo de costo mínimo.
     *   Guarda la solución en el atributo _solution.
     */
+
+    // Si no existe la instancia, no se puede resolver
+    
+    if (!this->_is_instance_set) {
+        this->_solution_status = 0;
+        return;
+    }
 
     // Time solution
     auto start = std::chrono::steady_clock::now();
