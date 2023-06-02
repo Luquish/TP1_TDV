@@ -356,6 +356,8 @@ La complejidad temporal del algoritmo greedy es $O(n^2)$, ya que en cada iteraci
 
 De modo empírico, se observó que el algoritmo greedy es mucho más rápido que el algoritmo de batching. Obtenemos para el dominio $n = 1, \dots ,500$, la imagen del tiempo de ejecución del algoritmo greedy esta entre $0.001$ y $2.66279$ mili-segundos, mientras que la imagen del tiempo de ejecución del algoritmo de batching esta entre $0.0$ y $151.0$ mili-segundos. En el gráfico el tiempo de ejecución es el del promedio de las 10 ejecuciones de cada algoritmo para cada cantidad de pasajeros, las imágenes para estos resultados se encuentran entre $0$ y ~$1$ ms para el algoritmo greedy y entre $0$ y ~$70$ ms para el algoritmo de batching.
 
+Todos los tiempos de ejecución fueron medidos en una computadora Macbook Pro M1 2020 con 16GB de RAM y 8 núcleos de procesamiento, corriendo macOS Ventura 13.3.1 (a) (22E772610a). El compilador utilizado fue g++ v. c++17.
+
 \newpage
 
 # Un nuevo modelo: Taxi Priority
