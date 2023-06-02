@@ -68,7 +68,6 @@ Ademas, se debe instalar la librería Google `OR-TOOLS` y actualizar el path en 
 - `output/fake/`: soluciones de las instancias generadas para experimentación.
 - `output/figures/`: gráficos de experimentación.
 
-- `informe/`: informe del proyecto.
-- `informe/imgs/`: imágenes del informe.
-- `informe/informe.rmd`: código fuente del informe.
 - `informe/TP1_Mazarello_Pardo.pdf`: informe final.
+- `informe/assets/imgs/`: imágenes del informe.
+- `informe/assets/informe.rmd`: código fuente del informe.
