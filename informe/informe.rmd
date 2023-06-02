@@ -46,11 +46,11 @@ output:
         2. [Tiempo de ejecución](#tiempo-de-ejecución)
 4. [Un nuevo modelo: Taxi Priority](#un-nuevo-modelo-taxi-priority)
     1. [Motivación](#motivación)
-    2. [Modelo y Algoritmo PrioritySolver](#modelo-y-algoritmo-prioritysolver)
+    2. [Modelo y Algoritmo TaxiPrioritySolver](#modelo-y-algoritmo-taxiprioritysolver)
     3. [Resultados](#resultados)
         1. [Comparación de soluciones en Instancias Originales](#comparación-de-soluciones-en-instancias-originales)
         2. [Comparación de soluciones en Instancias Aleatorias](#comparación-de-soluciones-en-instancias-aleatorias)
-        3. [Comparación de tiempos de ejecución entre PrioritySolver y Batching en Instancias Aleatorias](#comparación-de-tiempos-de-ejecución-entre-prioritysolver-y-batching-en-instancias-aleatorias)
+        3. [Comparación de tiempos de ejecución entre TaxiPrioritySolver y Batching Matching en Instancias Aleatorias](#comparación-de-tiempos-de-ejecución-entre-taxiprioritysolver-y-batching-matching-en-instancias-aleatorias)
 5. [Conclusiones](#conclusiones)
 6. [Referencias](#referencias)
 
@@ -58,10 +58,15 @@ output:
 
 # Introducción
 
-La aparición masiva de plataformas durante los últimos años han modificado la forma en la que interactuamos con distintos servicios. Algunos ejemplos incluyen la compra on-line y el efecto en el retail tradicional; la planificación de vacaciones y reserva de alojamientos; el delivery de comidas y la realización de envíos de pequeña escala; y las nuevas soluciones de movilidad tanto sobre sistemas tradicionales, como los taxis, así como también plataformas colaborativas y de ride sharing. La masividad lograda por estas aplicaciones y plataformas se justifica no solo por los mejores precios, sino también por una mejora en la experiencia del usuario en distintos aspectos como la presencia de reviews, la comodidad en la utilización y la rápida respuesta con las respectivas soluciones. Sin embargo, es importante notar que estas diferencias no se producen solamente con ofrecer una app, sino que es el resultado de un proceso más complejo de análisis de distintos aspectos del servicio propuesto.
-En este trabajo nos ponemos en el rol de consultores para una empresa que provee servicios de movilidad, cumpliendo el rol de matchmaker entre pasajeros y vehículos (taxis o particulares). En efecto, existen en el mercado local distintas alternativas de aplicaciones para conectar pasajeros con vehículos, con diversos niveles de éxito en términos de demanda y utilización. Nuestro objetivo es analizar un aspecto particular del proceso con decisiones que deben tomarse en tiempo real, evaluando el impacto en términos de la experiencia del usuario (tanto pasajeros como conductores) y de los potenciales costos involucrados.
+Nuestro objetivo principal en este estudio es analizar y evaluar el proceso de asignación de vehículos a pasajeros, considerando principalmente la distancia entre ellos y el recorrido de los viajes a realizar. En el rol de consultores para una empresa de servicios de movilidad, nos enfocamos en actuar como intermediarios entre pasajeros y vehículos, ya sean taxis o vehículos privados.
 
-## Descripción del problema y Motivación
+## Motivación
+
+En el mercado local, existen diversas aplicaciones que facilitan la conexión entre pasajeros y vehículos, pero es crucial comprender cómo mejorar y optimizar el proceso de asignación para garantizar una experiencia óptima tanto para los pasajeros como para los conductores. En este sentido, nos centraremos en la toma de decisiones en tiempo real, utilizando datos relevantes como la distancia del viaje y la ubicación actual del vehículo para realizar una asignación eficiente y conveniente.
+
+Al considerar dichas cuestiones, buscamos encontrar soluciones que minimicen los tiempos de espera de los pasajeros, optimicen la eficiencia de los vehículos y mejoren la calidad general del servicio. Nuestro análisis se basará en evaluar diferentes enfoques y algoritmos de asignación.
+
+## Descripción del problema
 
 En un instante dado (o en un intervalo muy pequeño de tiempo, digamos 10-15 segundos) y en una determinada área geográfica la empresa posee un número de pedidos de viajes a realizar y una cierta cantidad de vehículos disponibles para realizar viajes. Para cada pasajero podemos asumir la disponibilidad de un mínimo de información como
 
@@ -71,14 +76,19 @@ En un instante dado (o en un intervalo muy pequeño de tiempo, digamos 10-15 seg
 - una estimación de la tarifa total a cobrar por el viaje (que depende en parte de la distancia del recorrido, pero puede contener gastos extra como valijas, cantidad de pasajeros, horas pico, etc.).
 
 Análogamente, también podemos asumir mínimamente conocer en tiempo real la localización de cada uno de los vehículos de nuestra flota, en particular la de aquellos que estén disponibles para realizar viajes. Combinando la localización de pasajeros y vehículos, podemos asumir también que conocemos la distancia a recorrer que le llevaría a cada vehículo llegar a cada posible cliente a fin de poder empezar el viaje. El problema que buscamos resolver es decidir que vehículo debe buscar a cada pasajero.
-A fin de formular un modelo para la decisión en cuestión, primero formalizamos el problema. Tenemos n vehiculos disponibles, $i = 1, \dots ,n$ para cubrir n viajes de distintos pasajeros, $j = 1, \dots , n$. Por simplicidad, asumimos que el problema se encuentra balanceado en términos de oferta y demanda de viajes. En función de la información geográfica de los conductores y pasajeros, definimos dij a la distancia que debe recorrer el conductor i para empezar el viaje del pasajero $j$. Adicionalmente, para un pasajero $j = 1, \dots , n$ llamamos $v_j$ a la distancia del viaje a realizar por el pasajero $j$ y $f_j$ a la tarifa total a cobrarle por el viaje. Asumimos también que los pasajeros se encuentran ya ordenados de manera creciente en función del instante en el que realizaron el pedido.
+
+A fin de formular un modelo para la decisión en cuestión, primero formalizamos el problema. Tenemos $n$ vehiculos disponibles, $i = 1, \dots, n$ para cubrir $n$ viajes de distintos pasajeros, $j = 1, \dots , n$. Por simplicidad, asumimos que el problema se encuentra balanceado en términos de oferta y demanda de viajes, es decir, contamos con la misma cantidad de pasajeros demandantes que de vehiculos disponibles. En función de la información geográfica de los conductores y pasajeros, definimos $d_{ij}$ a la distancia que debe recorrer el conductor $i$ para empezar el viaje del pasajero $j$. Adicionalmente, para un pasajero $j = 1, \dots, n$ llamamos $v_j$ a la distancia del viaje a realizar por el pasajero $j$ y $f_j$ a la tarifa total a cobrarle por el viaje. Asumimos también que los pasajeros se encuentran ya ordenados de manera creciente en función del instante en el que realizaron el pedido.
+
+\newpage
 
 ## Estrategias de asignación
 
-La decisión puede ser abordada con distintos enfoques. Una primera aproximación natural al problema consiste en atender a los pasajeros uno a uno siguiendo el criterio First Come, First Served (FCFS), y tomar para cada pasajero una decisión greedy asignando el conductor disponible más cercano. En base a nuestras definciones, esta estrategia consiste en los siguientes pasos:
+La decisión puede ser abordada con distintos enfoques. Una primera aproximación natural al problema consiste en atender a los pasajeros uno a uno siguiendo el criterio First Come, First Served (FCFS), y tomar para cada pasajero una decisión __greedy__ asignando el conductor disponible más cercano. En base a nuestras definciones, esta estrategia consiste en los siguientes pasos:
+
 -  considerar a los pasajeros por orden de llegada;
--  a cada pasajero asignar el vehículo más cercano;
+-  a cada pasajero asignar el vehículo más cercano disponible.
 -  cada vehículo debe ser usado por exactamente un pasajero.
+
 Esta corresponde a la estrategia aplicada actualmente por la empresa.
 
 Sin embargo, aún con un contexto de toma de decisión en tiempo real, si el problema presenta un volumen de demanda significativo es posible modificar el proceso aplicando la idea de matching si
@@ -118,7 +128,7 @@ Para la evaluación del problema, se cuenta con 4 sets de instancias de distinto
 
 Cada grupo posee 10 instancias distintas, a fin de agregar variabilidad en los escenarios considerados.
 
-A partir de estas instancias, se obtiene un conjunto discreto de resultados en $n$, por lo que para expandir y generalizar la evaluación de los resultados, se generaron tambien, para cada $n \in [3, 500]$, 10 instancias con datos aleatorios de las mismas características que las instancias de los sets de datos originales. Estas instancias se utilizaron para evaluar el comportamiento de los algoritmos a medida que aumenta la cantidad de vehículos y pasajeros de forma mas continua.
+A partir de estas instancias, se obtiene un conjunto discreto de resultados de tamaño $n$, por lo que para expandir y generalizar la evaluación de los resultados, se generaron tambien, para cada $n \in [3, 500]$, 10 instancias con datos aleatorios de las mismas características que las instancias de los sets de datos originales. Estas instancias se utilizaron para evaluar el comportamiento de los algoritmos a medida que aumenta la cantidad de vehículos y pasajeros de forma mas general.
 
 \newpage
 
@@ -271,7 +281,7 @@ $$
 | 500 |       1553.29 |              1326.82 | 0.171215 |
 
 
-A simple vista parece ser que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy, ya que la mejora relativa es positiva en todos los casos. Sin embargo, no podemos afirmar esto sin hacer un test de hipotesis. Buscaremos observar entonces la progresión de la mejora relativa a medida que aumenta la cantidad de pasajeros. Para obtener una mejor idea de la distribución de los datos, se graficó un histograma de la mejora relativa entre algoritmos algoritmo asi tambien como sus distribuciones para cada $n$ pasajeros.
+A simple vista parece ser que el algoritmo de batching obtiene mejores resultados que el algoritmo greedy, ya que la mejora relativa es positiva en todos los casos. Buscaremos observar entonces la progresión de la mejora relativa a medida que aumenta la cantidad de pasajeros. Generamos una regresión cuadrática y una logarítmica para observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros. Para obtener una mejor idea de la distribución de los datos, se graficó un histograma de la mejora relativa entre algoritmos algoritmo asi tambien como sus distribuciones para cada $n$ pasajeros.
 
 <!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching.png)-->
 
@@ -279,7 +289,9 @@ A simple vista parece ser que el algoritmo de batching obtiene mejores resultado
 
 <!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_and_bar.png)-->
 
-![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_bar_box.png)
+<!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_bar_box.png)-->
+<!--![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_bar_box_line_reg_square.png)-->
+![Greedy vs Batching Cost](../src/output/figures/greedy_vs_batching_scatter_bar_box_line_reg.png)
 
 |   n |   count |     mean |       std |       min |      25% |      50% |      75% |      max |
 |----:|--------:|---------:|----------:|----------:|---------:|---------:|---------:|---------:|
@@ -288,7 +300,7 @@ A simple vista parece ser que el algoritmo de batching obtiene mejores resultado
 | 250 |      10 | 0.212157 | 0.0599257 | 0.144362  | 0.157622 | 0.201565 | 0.267717 | 0.299222 |
 | 500 |      10 | 0.171215 | 0.0305612 | 0.135713  | 0.143316 | 0.170003 | 0.198171 | 0.216486 |
 
-Es en este gráfico se puede ver que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros. Esto indica que el algoritmo de batching obtiene soluciones más __consistentes__ que el algoritmo greedy a mayor cantidad de pasajeros. Ademas parece ser que la media de las mejoras relativas disminuye a medida que aumenta la cantidad de pasajeros. Para expandir el análisis, se realizó la misma evaluación sobre las ~5000 instancias generadas aleatoriamente. 
+Es en este gráfico se puede ver que el desvío estándar de las mejoras relativas decrece a medida que aumenta la cantidad de pasajeros. Esto indica que la mejora relativa del algoritmo de `Batching` por sobre el algoritmo `Greedy` se vuelve mas consistente a mayor cantidad de pasajeros. Ademas parece ser que la media de las mejoras relativas disminuye a medida que aumenta la cantidad de pasajeros. Para expandir el análisis, se realizó la misma evaluación sobre las ~5000 instancias generadas aleatoriamente. 
 
 \newpage
 
@@ -307,9 +319,7 @@ Nuevamente se observa que el desvío estándar de las mejoras relativas decrece 
 
 ![Mejora Relativa - Greedy vs Batching Cost Log Regression - Random Instances](../src/output/figures/gap_avg_vs_n_fake_scatter_log_reg_table.png)
 
-A pesar de tener instancias con $n = 3, \dots, 498$, la tabla de la figura muestra las medias de las mejoras relativas para las cantidades de pasajeros de 50 en 50 para reducirla. Al Scatter Plot lo acompaña una regresión logarítmica a partir de la media de las mejoras relativas para cada cantidad de pasajeros para poder observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros.
-
-A partir de estos resultados, interpretamos que, a medida que la cantidad de pasajeros crece, la mejora relativa de la solución obtenida por el algoritmo de batching respecto a la solución obtenida por el algoritmo greedy tiende a crecer cada vez mas lento. El valor de la mejora relativa tiende de forma logaritmica en un valor cercano a $0.5$.
+Al Scatter Plot lo acompaña una regresión logarítmica a partir de la media de las mejoras relativas para cada cantidad de pasajeros para poder observar la tendencia de la mejora relativa a medida que aumenta la cantidad de pasajeros. A partir de estos resultados, interpretamos que, a medida que la cantidad de pasajeros crece, la mejora relativa de la solución obtenida por el algoritmo de batching respecto a la solución obtenida por el algoritmo greedy tiende a crecer cada vez mas lento. El valor de la mejora relativa promedio tiende de forma logaritmica en un valor cercano a $0.5$ cuando $n = 500$, mientras que para las $40$ instancias originales la mejora relativa promedio tiende a $0.2$, lo cual indica que el algoritmo de `Batching` es aún mejor por sobre el de `Greedy` que lo observado en la sección anterior.
 
 <!--
 |   n |     mean |
@@ -352,7 +362,7 @@ Para mitigar este problema, se planteo un nuevo algoritmo para la asignación de
 
 De esta forma, nuestra nueva metrica a optimizar es una función de la distancia del viaje y la distancia del Taxi al Pasajero resultando en un algoritmo _Taxi Centered_, es decir que prioriza los viajes más rentables para los conductores.
 
-## Modelo y Algoritmo `PrioritySolver`
+## Modelo y Algoritmo `TaxiPrioritySolver`
 
 Como la cuestión a resolver es minimizar el costo total de asignar los Taxis a los Pasajeros, se define la función de costo unitario como la distancia entre el Taxi y el Pasajero dividido la distancia del viaje del Pasajero. De esta forma, se busca minimizar el costo unitario de asignar un Taxi a un Pasajero. Por ejemplo, si tenemos un Taxi $t_i$ y un Pasajero $p_j$ donde:
 
@@ -387,7 +397,7 @@ Inicialmente evaluamos los tres modelos en las instancias originales.
 
 ![Priority vs Batching vs Greedy - Instancias Originales](../src/output/figures/results_combined_original.png)
 
-Como la función de costo unitario del modelo de `Batching` es directamente proporcional con la función de costo unitario de `Priority` ya que ambas dependen directamente de la distancia entre el Taxi y el Pasajero de la siguiente forma:
+Como la función de costo unitario del modelo de `Batching` es directamente proporcional con la función de costo unitario de `TaxiPriority` ya que ambas dependen directamente de la distancia entre el Taxi y el Pasajero de la siguiente forma:
 
 $$
 \begin{aligned}
@@ -396,19 +406,18 @@ $$
 \end{aligned}
 $$
 
-Los resultados nos muestran como el modelo de `PrioritySolver` obtiene soluciones con un costo objetivo cercano, aunque mayor, al modelo de `Batching` pero de todas formas menor que el modelo `Greedy`. Como la resolución por `Batching` resulta en la asignación óptima, es esperado que su función de valor objetivo actúe de cota inferior para los otros modelos.
+Los resultados nos muestran como el modelo de `TaxiPriority` obtiene soluciones con un costo objetivo cercano, aunque mayor, al modelo de `Batching` pero de todas formas menor que el modelo `Greedy`. Como la resolución por `Batching` resulta en la asignación óptima, es esperado que su función de valor objetivo actúe de cota inferior para los otros modelos.
 
 \newpage
 
 ### Comparación de soluciones en Instancias Aleatorias
 
-Al igual que en la experimentación de `Batching`, se utilizaron las mismas $~5000$ instancias generadas de forma aleatoria para comparar ahora con el nuevo modelo `Priority`.
+Al igual que en la experimentación de `Batching`, se utilizaron las mismas $\sim5000$ instancias generadas de forma aleatoria para comparar ahora con el nuevo modelo `TaxiPriority`.
 
 ![Valor Objetivo - Priority vs Batching vs Greedy - Instancias Aleatorias](../src/output/figures/solutions_random.png)
 ![Costo de Taxistas - Priority vs Batching vs Greedy  - Instancias Aleatorias](../src/output/figures/taxi_priorities_random_grouped.png)
 
-Podemos observar el mismo comportamiento que comportamiento que en las instancias originales, donde el modelo `Priority` obtiene soluciones con un costo objetivo cercano al modelo de `Batching` y menor que el modelo `Greedy`.
-
+Podemos observar el mismo comportamiento que aquel de las instancias originales, donde el modelo `TaxiPriority` obtiene soluciones con un costo objetivo cercano al modelo de `Batching` y menor que el modelo `Greedy`.
 
 Como nuestro nuevo modelo resulta de una red de flujo máximo de costo minimo de la misma cantidad de nodos y arcos que el modelo de Batching, sus complejidades algoritmicas son iguales.
 
@@ -416,16 +425,16 @@ Como nuestro nuevo modelo resulta de una red de flujo máximo de costo minimo de
 
 \newpage
 
-Luego, observamos la mejora relativa que presenta `Batching` frente al nuevo modelo de `Priority`.
-La media de la mejora relativa entre `Batching` y `Priority` tiende a $0.092019$, mientras que la mejora relativa entre `Batching` y `Greedy` para la misma cantidad de taxis/pasajeros tiende a $0.5$.
+Luego, observamos la mejora relativa que presenta `Batching` frente al nuevo modelo de `TaxiPriority`.
+La media de la mejora relativa entre `Batching` y `TaxiPriority` tiende a $0.092019$, mientras que la mejora relativa promedio entre `Batching` y `Greedy` para la misma cantidad de taxis/pasajeros tiende a $0.5$.
 
 ![Mejora Relativa - Priority vs Batching std - Instancias Aleatorias](../src/output/figures/relative_improvement_priority_vs_min_cost_flow_boxplot.png)
 
-Ademas podemos ver como la desviación estandar de la mejora relativa entre `Batching` y `Priority` decrece a medida que aumenta la cantidad de taxis/pasajeros al igual que lo hace la desviación estandar de la mejora relativa entre `Batching` y `Greedy`.
+Ademas podemos ver como la desviación estandar de la mejora relativa entre `Batching` y `TaxiPriority` decrece a medida que aumenta la cantidad de taxis/pasajeros al igual que lo hace la desviación estandar de la mejora relativa entre `Batching` y `Greedy` (esto también se debe atribuir a la naturaleza aleatoria de las instancias).
 
-### Comparación de tiempos de ejecución entre `Priority` y `Batching` en Instancias Aleatorias
+### Comparación de tiempos de ejecución entre `TaxiPriority` y `Batching Matching` en Instancias Aleatorias
 
-En la experimentación se observan comportamientos analogos en cuanto a tiempos de ejecución entre `Priority` y `Batching` ya que ambos modelos son resueltos por un algoritmo de flujo de costo mínimo.
+En la experimentación se observan comportamientos analogos en cuanto a tiempos de ejecución entre `TaxiPriority` y `Batching Matching` ya que ambos modelos son eventualmente resueltos por el mismo algoritmo de resolución de flujo máximo de costo mínimo, para la misma cantidad de nodos y arcos, por lo que sus complejidades algoritmicas son iguales.
 
 ![Tiempo de Ejecución - Batching vs Priority](../src/output/figures/time_comparison_priority_vs_min_cost_flow.png)
 
@@ -433,19 +442,17 @@ En la experimentación se observan comportamientos analogos en cuanto a tiempos 
 
 # Conclusiones
 
-El objetivo de este trabajo fue el de modelar el problema de asignación de Taxis a Pasajeros como un problema de flujo de costo mínimo, y comparar los resultados obtenidos con los modelos de `Batching` y `Greedy` planteados. Ademas se propuso un nuevo modelo de asignación de Taxis a Pasajeros, llamado `PrioritySolver`, que prioriza los viajes más rentables para los conductores, y se compararon los resultados obtenidos con los otros dos modelos.
+El objetivo de este trabajo fue el de modelar el problema de asignación de Taxis a Pasajeros como un problema de flujo de costo mínimo, y comparar los resultados obtenidos con los modelos de `Batching` y `Greedy` planteados. Ademas se propuso un nuevo modelo de asignación de Taxis a Pasajeros, llamado `TaxiPriority`, que prioriza los viajes más rentables para los conductores, y se compararon los resultados obtenidos con los otros dos modelos.
 
-Los tres algoritmos generan soluciones distintas para la asignación de viajes, una intuición de como lo modelan mas allá del valor de una función objetivo es la siguiente: El algoritmo de `PrioritySolver` prioriza los viajes más rentables para los conductores, mientras que el modelo de `Batching` prioriza los viajes más rentables para la asignación total, y el modelo `Greedy` beneficia a los pasajeros por orden de llegada.
+Los tres algoritmos generan soluciones distintas para la asignación de viajes, una descripción mas informal de como los algoritmos operan es la siguiente: El algoritmo FCFS (`Greedy`) prioriza los tiempos mas cortos para los pasajeros en orden de llegada, mientras que el modelo de `TaxiPriority` prioriza los viajes más rentables para los conductores. Por último, el modelo de `Batching` prioriza los viajes más rentables para la asignación total.
 
-La curva del modelo de `PrioritySolver` tiene un comportamiento similar al del modelo de `Batching` en cuanto el Valor Objetivo resultante para cada instancia. Con respecto a la relación entre el algoritmo `Greedy` y el `Batching`, por definición el algoritmo `Greedy` obtiene una solución subóptima, por lo tanto su Valor Objetivo es mayor que el del modelo de `Batching` que optimiza esta métrica. Por lo tanto, la cota inferior de estos Valores Objetivos esta siempre delineada por aquella resuelta por el modelo de `Batching`.
+La curva de la mejora relativa del modelo de `TaxiPriority` tiene un comportamiento similar al del modelo de `Batching` en cuanto el Valor Objetivo resultante para cada instancia comparada contra el algoritmo `Greedy`. Con respecto a la relación entre el algoritmo `Greedy` y el `Batching`, por definición el algoritmo `Greedy` obtiene una solución subóptima, por lo tanto su Valor Objetivo es mayor que el del modelo de `Batching` que optimiza esta métrica. Por lo tanto, la cota inferior de estos Valores Objetivos esta siempre delineada por aquella resuelta por el modelo de `Batching`.
 
-Los resultados obtenidos en la experimentación muestran que el modelo de `PrioritySolver` es de todas formas una buena alternativa para la asignación de Taxis a Pasajeros si se busca este beneficio para los conductores, dado a que obtiene soluciones con un Valor Objetivo cercano al modelo de `Batching`.
+Los resultados obtenidos en la experimentación muestran que el modelo de `TaxiPriority` es de todas formas una buena alternativa para la asignación de Taxis a Pasajeros si se busca este beneficio para los conductores, dado a que obtiene soluciones con un Valor Objetivo cercano al modelo de `Batching`.
 
-En términos de tiempos de ejecución, el modelo de `Greedy` supera ampliamente a los otros dos modelos, resultado tambien esperado dado a que su computo esta dado por una complejidad algoritmica de $O(n^2)$, mientras que los otros dos modelos tienen una complejidad algoritmica de $O(n^2*m*log(n*C))$. Ademas el modelo de `PrioritySolver` tiene un tiempo de ejecución similar al modelo de `Batching`, dado a que ambos modelos resuelven un problema de flujo de costo mínimo de la misma cantidad de nodos y arcos. En la experimentación se observa como el modelo de `Greedy` resuelve las instancias en ordenes de magnitudes menores que los otros dos modelos.
+En términos de tiempos de ejecución, el modelo de `Greedy` supera ampliamente a los otros dos modelos, resultado tambien esperado dado a que su computo esta dado por una complejidad algoritmica de $O(n^2)$, mientras que los otros dos modelos tienen una complejidad algoritmica de $O(n^2*m*log(n*C))$. Ademas el modelo de `TaxiPriority` tiene un tiempo de ejecución similar al modelo de `Batching`, dado a que ambos modelos resuelven un problema de flujo de costo mínimo de la misma cantidad de nodos y arcos. En la experimentación se observa como el modelo de `Greedy` resuelve las instancias en ordenes de magnitudes menores que los otros dos modelos.
 
-Ambas experimentaciones se vieron beneficiadas por la generación de instancias aleatorias, dado a que se pudo observar que: el comportamiento de los modelos en un rango más amplio y continuo de instancias; los resultados obtenidos en las instancias originales se mantienen en las instancias aleatorias, los modelos de `Batching` presentan una mejora relativa proyectada con respecto al modelo de `Greedy` en cuanto a la función objetivo; y el modelo de `PrioritySolver` presenta un comportamiento similar al modelo de `Batching` en cuanto a la función objetivo.
-
-\newpage
+Ambas experimentaciones se vieron beneficiadas por la generación de instancias aleatorias, dado a que se pudo observar que: el comportamiento de los modelos en un rango más amplio y continuo de instancias; los resultados obtenidos en las instancias originales se mantienen en las instancias aleatorias, los modelos de `Batching` presentan una mejora relativa proyectada con respecto al modelo de `Greedy` en cuanto a la función objetivo; y el modelo de `TaxiPriority` presenta un comportamiento similar al modelo de `Batching` en cuanto a la función objetivo.
 
 # Referencias
 
