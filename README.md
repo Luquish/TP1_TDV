@@ -57,6 +57,8 @@ Los resultados de la experimentación están detallados en el Informe `Informe.p
 Para ejecutar el programa, se debe compilar utilizando `make` y luego ejecutar el binario generado `taxi_batching`.
 Ademas, se debe instalar la librería Google `OR-TOOLS` y actualizar el path en el Makefile.
 
+Las instancias generadas aleatoriamente se deben generar con el Jupiter Notebook `src/scripts/experimentación.ipynb`, o se pueden utilizar las instancias de prueba que se encuentran en la carpeta `input`.
+
 ### Estructura del proyecto
 
 - `src/`: código fuente del proyecto.
